@@ -95,18 +95,21 @@ def save_to_csv(cigars, filename):
                 csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
                 csvwriter.writerow(cigar)
                 csvfile.close()
-def run(filename, startpage, endpage, quelist):
+def start_work(filename, firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, processnums):
+    '''组织抓取过程'''
+    pool = Pool(processes=processnums)
+    links = Manager().Queue()
+    items = Manager().Queue()
+    cigars = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
-    filename = filename
-    firsturl = "https://selected-cigars.com/en/cigars?p="
-    txtlist = []
-    for x in range(startpage, endpage):
-        page = x
-        baseurl = firsturl + str(page)
-        print("进程： "+str(os.getpid())+" 正在打开 "+baseurl)
-        for url in getallurl(baseurl, header, page):
-            if not quelist.full():
-                quelist.put(url)
-            else:
-                print("无法写入queue")
-        print(quelist.qsize())
+#    init()
+    makelinks(links, firsturl, startlist, endlist)#调用函数构造list
+    for index in range(0, maxurl):#获取item list
+        pool.apply_async(func=getallurl, args=(links, items, header))
+    for index in range(0, maxinfo):
+        pool.apply_async(func=getinfo, args=(items, cigars, header))
+    for index in range(0, maxcsv):
+        pool.apply_async(func=save_to_csv, args=(cigars, filename))
+
+    pool.close()
+    pool.join()

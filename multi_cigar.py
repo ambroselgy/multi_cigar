@@ -1,36 +1,25 @@
-from multiprocessing import Process, Queue, Pool, Manager
 import functions as fs
 import time
+import datetime
+'''间隔时间运行的selected-cigars爬虫工具，使用multi模块实现多进程抓取，目前运行时间50S'''
+def sleeptime(hour, min, sec):
+    return hour*3600 + min*60 + sec
 
-
-
-def start_work():
-    '''组织抓取过程'''
-    processnums = 10
-    pool = Pool(processes=10)
-    links = Manager().Queue()
-    items = Manager().Queue()
-    cigars = Manager().Queue()
-    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
-    filename = "multi.csv"
-    firsturl = "https://selected-cigars.com/en/cigars?p="
-    startlist = 1
-    endlist = 14
-#    init()
-    fs.makelinks(links, firsturl, startlist, endlist)#调用函数构造list
-    for index in range(0, 5):#获取item list
-        pool.apply_async(func=fs.getallurl, args=(links, items, header))
-    for index in range(0, 10):
-        pool.apply_async(func=fs.getinfo, args=(items, cigars, header))
-    for index in range(0, 1):
-        pool.apply_async(func=fs.save_to_csv, args=(cigars, filename))
-
-    pool.close()
-    pool.join()
-    # for index in cigars.get():
-    #     print(index)
+second = sleeptime(0, 10, 0) #间隔运行时间 时：分：秒
 
 if __name__ == '__main__':
-    st = time.time()
-    start_work()
-    print(time.time()-st)
+    while True:
+        firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
+        startlist = 1 #商品列表起始
+        endlist = 14 #商品列表终页
+        maxurl = 5 #url获取进程数分配
+        maxinfo = 10 #商品信息获取进程数分配
+        maxcsv = 1 #csv写入进程数分配
+        processnums = 10 #进程总数
+        header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
+        runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
+        filename = "multe_"+str(runtime)+".csv"  #存储文件根据时间自动命名
+        st = time.time()
+        fs.start_work(filename, firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, processnums)
+        print(time.time()-st)
+        time.sleep(second)
