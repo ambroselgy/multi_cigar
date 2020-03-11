@@ -18,9 +18,9 @@ def start_work():
     endlist = 14
 #    init()
     fs.makelinks(links, firsturl, startlist, endlist)#调用函数构造list
-    for index in range(0, 1):#获取item list
+    for index in range(0, 5):#获取item list
         pool.apply_async(func=fs.getallurl, args=(links, items, header))
-    for index in range(0, 8):
+    for index in range(0, 10):
         pool.apply_async(func=fs.getinfo, args=(items, cigars, header))
     for index in range(0, 1):
         pool.apply_async(func=fs.save_to_csv, args=(cigars, filename))

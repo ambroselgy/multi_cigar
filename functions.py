@@ -43,6 +43,7 @@ def getinfo(items, cigars, header):
         tmp_items = items.get()
         if tmp_items == "#END#": #遇到结束标记，退出进程
             items.put("#END#")
+            cigars.put("#END")
             print("数据抓取完成 {}".format(items.qsize()))
             break
         else:
@@ -61,12 +62,12 @@ def getinfo(items, cigars, header):
                         itemurl = tmp_items
                         cigarinfo = {'cigar_name':cigarlist,'cigar_price':price,'itemurl':str(itemurl)}
                         cigars.put(cigarinfo)
-                else:
-                    cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
-                    price = 'Sold out'
-                    itemurl = tmp_items
-                    cigarinfo = {'cigar_name': cigarlist, 'cigar_price': price, 'itemurl': str(itemurl)}
-                    cigars.put(cigarinfo)
+                # else:
+                #     cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
+                #     price = 'Sold out'
+                #     itemurl = tmp_items
+                #     cigarinfo = {'cigar_name': cigarlist, 'cigar_price': price, 'itemurl': str(itemurl)}
+                #     cigars.put(cigarinfo)
             # except:
             #     cigarlist = "error"
             #     price = "error"
