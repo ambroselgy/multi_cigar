@@ -60,25 +60,15 @@ def getinfo(items, cigars, header):
                         cigarprice = i.find('span', attrs={"data-price-type":"finalPrice"}).find('span',class_="price").string.strip()
                         price = cigarprice[1:]
                         itemurl = tmp_items
-                        cigarinfo = {'cigar_name':cigarlist,'cigar_price':price,'itemurl':str(itemurl)}
+                        if i.find('span', class_ = "savingPercent"):
+                            details = i.find('span', class_ ="savingPercent").string.strip().replace(" ","")
+                        else:
+                            details = '0'
+                        tmp_detailed = float(details.strip('%')) / 100 * float(price) + float(price)
+                        detailed = '%.2f' % tmp_detailed
+                        cigarinfo = {'cigar_name':cigarlist,'detailed':detailed,'details':details,'cigar_price':price,'itemurl':str(itemurl)}
                         cigars.put(cigarinfo)
-                # else:
-                #     cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
-                #     price = 'Sold out'
-                #     itemurl = tmp_items
-                #     cigarinfo = {'cigar_name': cigarlist, 'cigar_price': price, 'itemurl': str(itemurl)}
-                #     cigars.put(cigarinfo)
-            # except:
-            #     cigarlist = "error"
-            #     price = "error"
-            #     itemurl = url
-            #     cigarinfo = {
-            #         'cigar_name': cigarlist,
-            #         'cigar_price': price,
-            #         'itemurl': str(itemurl)
-            #     }
-            #     print(cigarinfo)
-            #     cigars.put(cigarinfo)
+
 
 def save_to_csv(cigars, filename):
     while True:
@@ -91,10 +81,19 @@ def save_to_csv(cigars, filename):
         else:
             filename = filename
             with open(filename, "a", encoding='utf-8-sig', newline='') as csvfile:
-                headers = ['cigar_name', 'cigar_price','itemurl']
+                headers = ['cigar_name', 'detailed','details','cigar_price','itemurl']
                 csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
-                csvwriter.writerow(cigar)
-                csvfile.close()
+                rowwriter = csv.writer(csvfile)
+                with open(filename, 'r', encoding='utf-8-sig') as rowfile:
+                    rowreader = csv.reader(rowfile)
+                    if not [row for row in rowreader]:
+                        rowwriter.writerow(['雪茄','税前价格','折扣','原价','链接'])
+                        csvwriter.writerow(cigar)
+                        csvfile.close()
+                    else:
+                        csvwriter.writerow(cigar)
+                        csvfile.close()
+
 def start_work(filename, firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, processnums):
     '''组织抓取过程'''
     pool = Pool(processes=processnums)
