@@ -55,7 +55,9 @@ def getinfo(items, cigars, header):
             itemlist = itempage.find_all('td', class_ = "col item", attrs={"data-th":"Product Name"})
             #获取到雪茄商品页面中的商品列表，通常为1支，1盒及价格等。
             for i in itemlist:
-                if not i.find_all('span', text = "Sold Out"):
+                tmp_stock = i.find('div', class_='stockindicator-content')
+                stock = tmp_stock.find('span').string.strip()
+                if stock != 'Sold Out':
                         cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
                         cigarprice = i.find('span', attrs={"data-price-type":"finalPrice"}).find('span',class_="price").string.strip()
                         price = cigarprice[1:]
