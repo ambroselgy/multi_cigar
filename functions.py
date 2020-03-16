@@ -4,6 +4,7 @@ import csv
 import os
 import time
 from multiprocessing import Process, Queue, Pool, Manager
+from pymongo import MongoClient
 '''links构造网站pagelist，items构造雪茄库存状态，cigars抓取名称及价格存入csv'''
 
 def makelinks(links, firsturl, startlist, endlist):
@@ -96,6 +97,7 @@ def save_to_csv(cigars, filename):
                         csvwriter.writerow(cigar)
                         csvfile.close()
 
+
 def start_work(filename, firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, processnums):
     '''组织抓取过程'''
     pool = Pool(processes=processnums)
@@ -114,3 +116,4 @@ def start_work(filename, firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, 
 
     pool.close()
     pool.join()
+
