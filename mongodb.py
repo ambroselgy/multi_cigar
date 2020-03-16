@@ -11,6 +11,10 @@ db = connect['test']
 collection = db['stock']
 # collection.insert_one({"name":"user1", "age":12, "sex":"male"})
 # collection.insert_one({"name":"user2", "age":13, "sex":"male"})
-# collection.insert_one({"name":"user3", "age":14, "sex":"male"})
+# collection.insert_one({"name":"user88", "age":99, "sex":"male"})
+
+
+tmp_data = {'age':999,'sex':'it is ok'}
+tmp_filter = {'$and':[{'name':{'$regex':'user'}},{'stock':{'$regex':'test'}}]}
 collection.find()
-collection.update_one(filter={"name":"user99"}, update={"$set":{"age":99}}, upsert=True)
+collection.update_many(filter=tmp_filter, update={"$set":tmp_data}, upsert=True)

@@ -95,7 +95,7 @@ def save_to_mongodb(cigars):
             tmp_data = cigar
             tmp_cigar = cigar["cigar_name"]
             tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
-            txt = collection.update_one(filter={'cigar_name':tmp_cigar},update={
+            collection.update_one(filter={'cigar_name':tmp_cigar},update={
                 "$set":tmp_data},upsert=True)
 
 
