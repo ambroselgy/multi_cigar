@@ -92,21 +92,13 @@ def save_to_mongodb(cigars):
             connect.close()
             break
         else:
+            tmp_data = {}
             tmp_cigar = cigar["cigar_name"]
-            tmp_detailed = cigar['detailed']
-            tmp_stock = cigar['stock']
-            tmp_details = cigar['details']
-            tmp_cigar_price = cigar['cigar_price']
-            tmp_itemurl = cigar['itemurl']
-            tmp_times = cigar["times"]
+            for k,v in cigar.items():
+                if k != 'cigar_name':
+                    tmp_data[k]=v
             txt = collection.update_one(filter={'cigar_name':tmp_cigar},update={
-                "$set":{'detailed':tmp_detailed},
-                "$set": {'stock':tmp_stock},
-                "$set": {'details': tmp_details},
-                "$set": {'cigar_price': tmp_cigar_price},
-                "$set": {'itemurl': tmp_itemurl},
-                "$set": {'times': tmp_times},
-            },upsert=True)
+                "$set":tmp_data},upsert=True)
 
 
 def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxcsv, processnums):
@@ -139,7 +131,7 @@ if __name__ == '__main__':
         maxurl = 5 #url获取进程数分配
         maxinfo = 10 #商品信息获取进程数分配
         maxcsv = 1 #csv写入进程数分配
-        processnums = 10 #进程总数
+        processnums = 11 #进程总数
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
         st = time.time()

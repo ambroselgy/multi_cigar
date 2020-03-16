@@ -7,9 +7,10 @@ from pymongo import MongoClient
 import datetime
 
 connect = MongoClient(host='localhost', port=27017)
-db = connect['select-cigars']
+db = connect['test']
 collection = db['stock']
-list = collection.find({"cigar_name":"Sancho Panza - Non Plus 25pcs, wooden Box"})
-tist = collection.find()
-print(list)
-print(tist)
+# collection.insert_one({"name":"user1", "age":12, "sex":"male"})
+# collection.insert_one({"name":"user2", "age":13, "sex":"male"})
+# collection.insert_one({"name":"user3", "age":14, "sex":"male"})
+collection.find()
+collection.update_one(filter={"name":"user99"}, update={"$set":{"age":99}}, upsert=True)
