@@ -7,9 +7,14 @@ from pymongo import MongoClient
 import datetime
 
 connect = MongoClient(host='localhost', port=27017)
-db = connect['select-cigars']
+db = connect['test']
 collection = db['stock']
-list = collection.find({"cigar_name":"Sancho Panza - Non Plus 25pcs, wooden Box"})
-tist = collection.find()
-print(list)
-print(tist)
+# collection.insert_one({"name":"user1", "age":12, "sex":"male"})
+# collection.insert_one({"name":"user2", "age":13, "sex":"male"})
+# collection.insert_one({"name":"user88", "age":99, "sex":"male"})
+
+
+tmp_data = {'age':999,'sex':'it is ok'}
+tmp_filter = {'$and':[{'name':{'$regex':'user'}},{'stock':{'$regex':'test'}}]}
+collection.find()
+collection.update_many(filter=tmp_filter, update={"$set":tmp_data}, upsert=True)
