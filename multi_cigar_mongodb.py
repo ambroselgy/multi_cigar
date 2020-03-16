@@ -21,7 +21,7 @@ def getallurl(links, items, header):
 
     while True:
         tmp_links = links.get()
-        print("开始获取 "+str(tmp_links)+"  页面数据")
+        print("开始获取 "+str(tmp_links)+"  数据")
         if tmp_links == "#END#" : #遇到结束标志，推出进程
             links.put("#END#")
             items.put("#END#")
@@ -92,11 +92,9 @@ def save_to_mongodb(cigars):
             connect.close()
             break
         else:
-            tmp_data = {}
+            tmp_data = cigar
             tmp_cigar = cigar["cigar_name"]
-            for k,v in cigar.items():
-                if k != 'cigar_name':
-                    tmp_data[k]=v
+            tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
             txt = collection.update_one(filter={'cigar_name':tmp_cigar},update={
                 "$set":tmp_data},upsert=True)
 
