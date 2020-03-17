@@ -27,15 +27,19 @@ def getallurl(links, items, header):
             print("Pages Quit {}". format(links.qsize()))
             break
         else:
-            r = requests.get(tmp_links, headers=header)
-            r.encoding = 'utf-8'
-            html = r.text
-            soup = BeautifulSoup(html, "html.parser")
-            product = soup.find_all('li', class_="item product product-item")
-            for i in product:
-                x = i.find('strong', class_="product name product-item-name")
-                url = x.find('a')['href']
-                items.put(url)
+            try:
+                r = requests.get(tmp_links, headers=header)
+                r.encoding = 'utf-8'
+                html = r.text
+                soup = BeautifulSoup(html, "html.parser")
+                product = soup.find_all('li', class_="item product product-item")
+                for i in product:
+                    x = i.find('strong', class_="product name product-item-name")
+                    url = x.find('a')['href']
+                    items.put(url)
+            except Exception as err:
+                print(str(tmp_links)+"    列表页解析报错")
+                print(err)
 
 def getinfo(items, cigars, header):
 
@@ -142,7 +146,7 @@ if __name__ == '__main__':
 #    while True:
         firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
         startlist = 1 #商品列表起始
-        endlist = 14 #商品列表终页
+        endlist = 17 #商品列表终页
         maxurl = 5  #解析列表页，获取商品链接的进程
         maxinfo = 10 #获取商品信息的进程
         maxsave = 5  #存储进程
