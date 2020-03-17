@@ -104,13 +104,13 @@ def save_to_mongodb(cigars):
                 print(err)
 
 
-def start_work_mongodb(firsturl, startlist, endlist, ):
+def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave ):
     '''组织抓取过程'''
-    getallurl_nums = 5  #解析列表页的进程
+    getallurl_nums = maxurl  #解析列表页的进程
     getallurl_pool = Pool(processes=getallurl_nums)
-    getinfo_nums = 15   #获取商品的进程
+    getinfo_nums = maxinfo   #获取商品的进程
     getinfo_pool = Pool(processes=getinfo_nums)
-    save_to_mongodb_nums = 1  #存储数据的进程
+    save_to_mongodb_nums = maxsave  #存储数据的进程
     save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
     links = Manager().Queue()
     items = Manager().Queue()
@@ -138,15 +138,17 @@ def start_work_mongodb(firsturl, startlist, endlist, ):
 
 
 second = sleeptime(1, 0, 0) #间隔运行时间 时：分：秒
-
 if __name__ == '__main__':
 #    while True:
         firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
         startlist = 1 #商品列表起始
         endlist = 14 #商品列表终页
+        maxurl = 5
+        maxinfo = 10
+        maxsave = 5
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
         st = time.time()
-        start_work_mongodb(firsturl, startlist, endlist)
+        start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave)
         print(time.time()-st)
 #        time.sleep(second)
