@@ -106,11 +106,11 @@ def save_to_mongodb(cigars):
 
 def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave ):
     '''组织抓取过程'''
-    getallurl_nums = maxurl  #解析列表页的进程
+    getallurl_nums = maxurl
     getallurl_pool = Pool(processes=getallurl_nums)
-    getinfo_nums = maxinfo   #获取商品的进程
+    getinfo_nums = maxinfo
     getinfo_pool = Pool(processes=getinfo_nums)
-    save_to_mongodb_nums = maxsave  #存储数据的进程
+    save_to_mongodb_nums = maxsave
     save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
     links = Manager().Queue()
     items = Manager().Queue()
@@ -143,9 +143,9 @@ if __name__ == '__main__':
         firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
         startlist = 1 #商品列表起始
         endlist = 14 #商品列表终页
-        maxurl = 5
-        maxinfo = 10
-        maxsave = 5
+        maxurl = 5  #解析列表页，获取商品链接的进程
+        maxinfo = 10 #获取商品信息的进程
+        maxsave = 5  #存储进程
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
         st = time.time()
