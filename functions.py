@@ -10,12 +10,14 @@ from pymongo import MongoClient
 def makelinks(links, firsturl, startlist, endlist):
     for index in range(startlist, endlist+1):
         links.put(firsturl + str(index))
+        print(firsturl + str(index))
     links.put("#END#")
 
 def getallurl(links, items, header):
 
     while True:
         tmp_links = links.get()
+        print("开始获取 " + str(tmp_links) + "  数据")
         if tmp_links == "#END#" : #遇到结束标志，推出进程
             links.put("#END#")
             items.put("#END#")
@@ -28,11 +30,9 @@ def getallurl(links, items, header):
             soup = BeautifulSoup(html, "html.parser")
             product = soup.find_all('li', class_="item product product-item")
             for i in product:
-                if not i.find_all('span', text = "Out of stock"):
-                    x = i.find('strong', class_="product name product-item-name")
-                    url = x.find('a')['href']
-                    #print(url)
-                    items.put(url)
+                x = i.find('strong', class_="product name product-item-name")
+                url = x.find('a')['href']
+                items.put(url)
 
 def getinfo(items, cigars, header):
 
@@ -44,7 +44,7 @@ def getinfo(items, cigars, header):
         tmp_items = items.get()
         if tmp_items == "#END#": #遇到结束标记，退出进程
             items.put("#END#")
-            cigars.put("#END")
+            cigars.put("#END#")
             print("数据抓取完成 {}".format(items.qsize()))
             break
         else:
@@ -58,19 +58,18 @@ def getinfo(items, cigars, header):
             for i in itemlist:
                 tmp_stock = i.find('div', class_='stockindicator-content')
                 stock = tmp_stock.find('span').string.strip()
-                if stock != 'Sold Out':
-                        cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
-                        cigarprice = i.find('span', attrs={"data-price-type":"finalPrice"}).find('span',class_="price").string.strip()
-                        price = cigarprice[1:]
-                        itemurl = tmp_items
-                        if i.find('span', class_ = "savingPercent"):
-                            details = i.find('span', class_ ="savingPercent").string.strip().replace(" ","")
-                        else:
-                            details = '0'
-                        tmp_detailed = float(details.strip('%')) / 100 * float(price) + float(price)
-                        detailed = '%.2f' % tmp_detailed
-                        cigarinfo = {'cigar_name':cigarlist,'detailed':detailed,'details':details,'cigar_price':price,'itemurl':str(itemurl)}
-                        cigars.put(cigarinfo)
+                cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
+                cigarprice = i.find('span', attrs={"data-price-type":"finalPrice"}).find('span',class_="price").string.strip()
+                price = cigarprice[1:]
+                itemurl = tmp_items
+                if i.find('span', class_ = "savingPercent"):
+                    details = i.find('span', class_ ="savingPercent").string.strip().replace(" ","")
+                else:
+                    details = '0'
+                tmp_detailed = float(details.strip('%')) / 100 * float(price) + float(price)
+                detailed = '%.2f' % tmp_detailed
+                cigarinfo = {'cigar_name':cigarlist,'stock':stock,'detailed':detailed,'details':details,'cigar_price':price,'itemurl':str(itemurl)}
+                cigars.put(cigarinfo)
 
 
 def save_to_csv(cigars, filename):
@@ -84,13 +83,13 @@ def save_to_csv(cigars, filename):
         else:
             filename = filename
             with open(filename, "a", encoding='utf-8-sig', newline='') as csvfile:
-                headers = ['cigar_name', 'detailed','details','cigar_price','itemurl']
+                headers = ['cigar_name', 'stock','detailed','details','cigar_price','itemurl']
                 csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
                 rowwriter = csv.writer(csvfile)
                 with open(filename, 'r', encoding='utf-8-sig') as rowfile:
                     rowreader = csv.reader(rowfile)
                     if not [row for row in rowreader]:
-                        rowwriter.writerow(['雪茄','税前价格','折扣','原价','链接'])
+                        rowwriter.writerow(['雪茄','库存','税前价格','折扣','原价','链接'])
                         csvwriter.writerow(cigar)
                         csvfile.close()
                     else:

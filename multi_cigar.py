@@ -15,9 +15,9 @@ if __name__ == '__main__':
         firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
         startlist = 1 #商品列表起始
         endlist = 14 #商品列表终页
-        maxurl = 5 #url获取进程数分配
-        maxinfo = 14 #商品信息获取进程数分配
-        maxcsv = 1 #csv写入进程数分配
+        maxurl = 10 #url获取进程数分配
+        maxinfo = 5 #商品信息获取进程数分配
+        maxcsv = 5 #csv写入进程数分配
         processnums = 10 #进程总数
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
