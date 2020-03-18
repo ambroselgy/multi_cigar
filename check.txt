@@ -1,0 +1,135 @@
+<li class="ws-g DetailVariant" data-sort="{&quot;name&quot;:&quot;Coronas Especiales&quot;,&quot;price&quot;:&quot;23.10&quot;,&quot;rating&quot;:&quot;4&quot;,&quot;quality&quot;:&quot;88&quot;,&quot;taste&quot;:&quot;6&quot;,&quot;diameter&quot;:&quot;1.51&quot;,&quot;length&quot;:&quot;15.24&quot;}" data-addtocart="loader">
+
+	<div class="ws-u-1 DetailVariant-variantName">
+		Coronas Especiales					</div>
+
+
+	<a class="ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image" href="/en/zigarren/cuba/regulares/cohiba-zigarren-coronas-especiales-01002_10" title="Cohiba Coronas Especiales">
+		<img src="/bilder/detail/2_10_44834.jpg" style="width: 79%; height: auto;" alt="Coronas Especiales">	</a>
+
+	<a class="ws-u-1 ws-u-lg-11-24 ws-u-xl-13-24 DetailVariant-col DetailVariant-data" href="/en/zigarren/cuba/regulares/cohiba-zigarren-coronas-especiales-01002_10" title="Cohiba Coronas Especiales">
+		<div class="ws-g">
+			<div class="ws-u-1 DetailVariant-dataName">
+								<span>Coronas Especiales</span>
+											</div>
+			<div class="ws-u-1">
+				<div class="ws-g">
+
+					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
+						<span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span></div></span>
+                    	<span class="hidden">4 Ratings</span>
+                    	<span class="DetailVariant-dataTitle">88 Ratings</span>
+					</div>
+
+					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
+						<span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span></div></span>
+                    	<span class="hidden">6 Ratings</span>
+                    	<span class="DetailVariant-dataTitle">Quality</span>
+					</div>
+
+					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
+							                        <span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf inactive"></span><span class="fa fa-leaf inactive"></span></div></span>
+	                        <span class="hidden">6 Ratings</span>
+							<span class="DetailVariant-dataTitle">
+								Strength	                    	                    		<span class="DetailVariant-dataInfo">                <span><img src="/img/TAM.gif" class="herstellungsart" alt="Fabrication Totalmente a mano - (longfiller)" title="Fabrication Totalmente a mano - (longfiller)">TAM</span></span>
+	                    	</span>
+					</div>
+
+					<div class="ws-u-1 ws-u-lg-6-24 ws-u-xl-3-24 DetailVariant-dataContent DetailVariant-dataDiameter">
+													<span class="DetailVariant-dataValue">1.51</span>
+							<span class="DetailVariant-dataTitle">Ø</span>
+											</div>
+
+					<div class="ws-u-1 ws-u-lg-6-24 ws-u-xl-3-24 DetailVariant-dataContent DetailVariant-dataLength">
+													<span class="DetailVariant-dataValue">15.24</span>
+							<span class="DetailVariant-dataTitle">Length</span>
+											</div>
+
+				</div>
+			</div>
+					</div>
+	</a>
+
+
+	<div class="ws-u-1 ws-u-lg-9-24 ws-u-xl-7-24 DetailVariant-col">
+		<form class="ws-g DetailVariant-form" method="post" action="/en/warenkorb/show" data-ajaction="/en/ajax/warenkorb/show" data-addtocart="form">
+
+									<div class="ws-u-1 DetailVariant-formRow">
+						<div class="ws-g">
+							<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPriceTitle">Price</div>
+							<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantityTitle">Amount</div>
+							<div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnitTitle">Unit</div>
+						</div>
+					</div>
+
+								<div class="ws-u-1 DetailVariant-formRow">
+					<div class="ws-g">
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
+							<input type="hidden" name="wk_artikelid[1]" value="10">							<span class="preis">€ 23.10</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
+
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
+							<select name="wk_anzahl[1]" id="wk_anzahl_auswahl_1" class="wkanzahl"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option></select>                        </div>
+
+                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
+							<label for="wk_anzahl_auswahl_1">
+                                <input type="hidden" name="wk_einheit[1]" value="19"><span class="einheitlabel avail_1" title="">1er</span>
+                                					                                        </label>
+						</div>
+                    </div>
+				</div>
+				<div class="ws-u-1 DetailVariant-formRow">
+					<div class="ws-g">
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
+							<input type="hidden" name="wk_artikelid[2]" value="10">							<span class="preis">€ 115.50</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
+
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
+							<a href="/en/shop/createreminder/01002/20" class="ws-button ws-button-sm Reminder" title="" data-toggle="tooltip" data-placement="top" data-original-title="Notify me  via e-mail as soon as the item is back in stock."><i class="fa fa-envelope Reminder-icon"></i> &nbsp; <i class="fa fa-info Reminder-icon"></i></a>                        </div>
+
+                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
+							<label for="wk_anzahl_auswahl_2">
+                                <input type="hidden" name="wk_einheit[2]" value="20"><span class="einheitlabel avail_3" title="Currently not available">5er</span>
+                                					            <br><span class="avail_3">Currently not available</span>                            </label>
+						</div>
+                    </div>
+				</div>
+				<div class="ws-u-1 DetailVariant-formRow">
+					<div class="ws-g">
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
+							<input type="hidden" name="wk_artikelid[3]" value="10">							<span class="preis">€ 577.50</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
+
+						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
+							<select name="wk_anzahl[3]" id="wk_anzahl_auswahl_3" class="wkanzahl"><option value="0">0</option><option value="1">1</option></select>                        </div>
+
+                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
+							<label for="wk_anzahl_auswahl_3">
+                                <input type="hidden" name="wk_einheit[3]" value="21"><span class="einheitlabel avail_1" title="">25er Kiste</span>
+                                					                                        </label>
+						</div>
+                    </div>
+				</div>
+
+				<div class="ws-u-1 DetailVariant-formRow">
+					<!--div class="ws-g">
+													<div class="ws-u-1 ws-u-lg-3-5 DetailVariant-formOrderlimit nobr" title="Sales volume limited to 25 cigars !">
+								Sales volume limited to 25 cigars !							</div>
+												<div class="ws-u-1 ws-u-lg-2-5 DetailVariant-formAddtocart">
+							<button class="ws-button ws-button-md ws-button-checkout DetailVariant-formAddtocartButton" type="submit">In den Warenkorb</button>
+						</div>
+					</div-->
+					                            						<div class="ws-g">
+    							<div class="ws-u-1 DetailVariant-formOrderlimit nobr" title="Sales volume limited to 25 cigars !">
+    								Sales volume limited to 25 cigars !    							</div>
+    						</div>
+                        																<div class="ws-g">
+							<div class="ws-u-1-1 ws-u-lg-1-4 DetailVariant-space"></div>
+							<div class="ws-u-1-1 ws-u-lg-1-4 DetailVariant-space"></div>
+							<div class="ws-u-1-1 ws-u-lg-1-2 DetailVariant-formAddtocart">
+								<button class="ws-button ws-button-md ws-button-checkout DetailVariant-formAddtocartButton" type="submit" data-addtocart="submit" data-toggle="tooltip" data-trigger="manual" data-title="Amount not selected" data-original-title="" title="">In den Warenkorb</button>
+							</div>
+						</div>
+														</div>
+
+		</form>
+	</div>
+
+</li>

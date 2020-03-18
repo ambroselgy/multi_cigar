@@ -6,7 +6,6 @@ from multiprocessing import Process, Queue, Pool, Manager
 from pymongo import MongoClient
 import datetime
 
-
 def getallurl():
         tmp_links = "https://www.cigarworld.de/en/zigarren/cuba/regulares/cohiba-zigarren-01002"
         print("开始获取 "+str(tmp_links)+"  数据")
@@ -31,13 +30,4 @@ def getallurl():
                                 nums = re.sub(r'\D',"",tmp_nums)
                                 print("雪茄"+str(name)+"价格"+price+"数量"+str(nums))
 
-
-
-
-
-
-
 getallurl()
-
-# > div.ws-g > div.ws-u-1.DetailVariant-dataName > span
-#tab-pane-variants > li:nth-child(22) > a.ws-u-1.ws-u-lg-11-24.ws-u-xl-13-24.DetailVariant-col.DetailVariant-data > div > div.ws-u-1.DetailVariant-dataName > span:nth-child(1)
