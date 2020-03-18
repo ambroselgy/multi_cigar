@@ -57,7 +57,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
                         itemurl = 'https://www.cigarworld.de'+tmp_itemurl
                         if len(pricelist) == len(numslist):
                                 for i in range(len(pricelist)):
-                                        tmp_name = str(cigar_name).replace('\n','').strip()
+                                        tmp_name = str(cigar_name)
                                         price = pricelist[i].text.replace("€","").strip()
                                         tmp_nums = numslist[i].text
                                         tmp_stock = numslist[i].get('title').strip()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
                  'https://www.cigarworld.de/en/zigarren/cuba?von=60']  #网站列表页模板
         maxurl = 3  #解析列表页，获取商品链接的进程
         maxinfo = 10 #获取商品信息的进程
-        maxsave = 5  #存储进程
+        maxsave = 1  #存储进程
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
         st = time.time()
         start_work_mongodb(links, maxurl, maxinfo, maxsave)
