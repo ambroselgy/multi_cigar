@@ -23,10 +23,15 @@ def getallurl():
                 numslist = i.find_all('span', attrs={'class':re.compile(r'einheitlabel')})
                 if len(pricelist) == len(numslist):
                         for i in range(len(pricelist)):
-                                name = cigar_name
+                                name = cigar_name.strip()
                                 price = pricelist[i].text.replace("€","").strip()
                                 tmp_nums = numslist[i].text
+                                tmp_stock = numslist[i].get('title').strip()
+                                if tmp_stock:
+                                        stock = tmp_stock
+                                else:
+                                        stock = "in stock"
                                 nums = re.sub(r'\D',"",tmp_nums)
-                                print("品牌"+title+"雪茄"+str(name)+"价格"+price+"数量"+str(nums))
+                                print("品牌"+title+"雪茄"+str(name)+"价格"+price+"数量"+str(nums)+"库存 "+stock)
 
 getallurl()

@@ -26,11 +26,16 @@ def getallurl():
                 numslist = i.find_all('span', attrs={'class':re.compile(r'einheitlabel')})
                 if len(pricelist) == len(numslist):
                         for i in range(len(pricelist)):
-                                name = cigar_name
+                                name = cigar_name.strip()
                                 price = pricelist[i].text.replace("€","").strip()
                                 tmp_nums = numslist[i].text
+                                tmp_stock = numslist[i].get('title').strip()
+                                if tmp_stock:
+                                        stock = tmp_stock
+                                else:
+                                        stock = "in stock"
                                 nums = re.sub(r'\D',"",tmp_nums)
-                                print("品牌"+title+"雪茄"+str(name)+"价格"+price+"数量"+str(nums))
+                                print("品牌"+title+"雪茄"+str(name)+"价格"+price+"数量"+str(nums)+"库存 "+stock)
 
 
 
@@ -40,6 +45,3 @@ def getallurl():
 
 getallurl()
 
-# > div.ws-g > div.ws-u-1.DetailVariant-dataName > span
-#tab-pane-variants > li:nth-child(22) > a.ws-u-1.ws-u-lg-11-24.ws-u-xl-13-24.DetailVariant-col.DetailVariant-data > div > div.ws-u-1.DetailVariant-dataName > span:nth-child(1)
-#body > main > div > div:nth-child(2) > div.ws-u-1.ws-u-lg-16-24 > div > div.ws-u-1.h-alt.DetailInfo-title > h1
