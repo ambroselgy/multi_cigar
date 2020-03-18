@@ -17,6 +17,7 @@ def getallurl():
         html = r.text
         soup = BeautifulSoup(html, "lxml")
         item_list = soup.select("li.ws-g.DetailVariant")
+        title = soup.find('h1').string
         #namelist = soup.select("a.ws-u-1.ws-u-lg-11-24.ws-u-xl-13-24.DetailVariant-col.DetailVariant-data > div.ws-g > div.ws-u-1.DetailVariant-dataName > span:first-of-type")
         #itemlist = soup.find_all('li', class_="ws-g DetailVariant")
         for i in item_list:
@@ -29,7 +30,7 @@ def getallurl():
                                 price = pricelist[i].text.replace("€","").strip()
                                 tmp_nums = numslist[i].text
                                 nums = re.sub(r'\D',"",tmp_nums)
-                                print("雪茄"+str(name)+"价格"+price+"数量"+str(nums))
+                                print("品牌"+title+"雪茄"+str(name)+"价格"+price+"数量"+str(nums))
 
 
 
@@ -41,3 +42,4 @@ getallurl()
 
 # > div.ws-g > div.ws-u-1.DetailVariant-dataName > span
 #tab-pane-variants > li:nth-child(22) > a.ws-u-1.ws-u-lg-11-24.ws-u-xl-13-24.DetailVariant-col.DetailVariant-data > div > div.ws-u-1.DetailVariant-dataName > span:nth-child(1)
+#body > main > div > div:nth-child(2) > div.ws-u-1.ws-u-lg-16-24 > div > div.ws-u-1.h-alt.DetailInfo-title > h1
