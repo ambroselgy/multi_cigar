@@ -29,6 +29,10 @@ def getallurl(links, items, header):
         else:
             try:
                 r = requests.get(tmp_links, headers=header)
+                while r.status_code != 200:
+                    time.sleep(10)
+                    print("重新获取  "+str(tmp_links)+"   数据")
+                    r = requests.get(tmp_links, headers=header)
                 r.encoding = 'utf-8'
                 html = r.text
                 soup = BeautifulSoup(html, "html.parser")
