@@ -134,7 +134,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     get_item_info_nums = maxinfo
     get_item_info_pool = Pool(processes=get_item_info_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,)
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,))
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
