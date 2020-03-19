@@ -58,6 +58,10 @@ def getinfo(items, cigars, header):
             break
         else:
             r = requests.get(tmp_items, headers=header)
+            while r.status_code != 200:
+                time.sleep(10)
+                print("重新获取  " + str(tmp_items) + "   数据")
+                r = requests.get(tmp_items, headers=header)
             r.encoding = 'utf-8'
             html = r.text
             itempage = BeautifulSoup(html, "html.parser")
