@@ -2,15 +2,20 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from multiprocessing import Process, Queue, Pool, Manager
+from multiprocessing import Process, Queue, Pool, Manager, Value
 from pymongo import MongoClient
 import datetime
+
+def init(args):
+    ''' store the counter for later use '''
+    global writenums
+    writenums = args
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigarworld']
     collection = db['test']
-    writenums = 0
+    global writenums
     while True:
         while item_info_queue.empty():
             time.sleep(0.02)
@@ -23,12 +28,12 @@ def save_to_mongodb(item_info_queue):
                 tmp_data = cigarinfo
                 tmp_cigar = cigarinfo["cigar_name"]
                 tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
-                writenums += 1
-                print("已写入  "+str(writenums)+"  条数据")
                 #print(tmp_data)
                 #print("队列剩余"+str(item_info_queue.qsize()))
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
+                with writenums.get_lock():
+                    writenums += 1
             except Exception as err:
                 print(tmp_cigar+"    存储报错")
                 print(err)
@@ -77,9 +82,9 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                         name = title+" "+tmp_name+'  '+str(nums)
                                         details = '0'
                                         detailed = price
-                                        cigarinfo = {'cigar_name': name, 'detailed': detailed, 'stock': stock,
-                                                     'details': details,
-                                                     'cigar_price': price, 'itemurl': itemurl, 'times': times}
+                                        cigarinfo = {'title':title,'cigar_name': name, 'detailed': detailed,
+                                                     'stock': stock,'details': details,'cigar_price': price,
+                                                     'itemurl': itemurl, 'times': times}
                                         #print(cigarinfo)
                                         item_info_queue.put(cigarinfo)
                         else:
@@ -123,12 +128,13 @@ def make_page_links(page_links, page_links_queue):
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
+    writenums = Value('i', 0)
     get_item_url_nums = maxurl
     get_item_url_pool = Pool(processes=get_item_url_nums)
     get_item_info_nums = maxinfo
     get_item_info_pool = Pool(processes=get_item_info_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,)
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()

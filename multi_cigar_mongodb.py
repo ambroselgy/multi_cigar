@@ -1,13 +1,18 @@
 from bs4 import BeautifulSoup
 import requests
 import time
-from multiprocessing import Process, Queue, Pool, Manager
+from multiprocessing import Process, Queue, Pool, Manager, Value
 from pymongo import MongoClient
 import datetime
 '''间隔时间运行的selected-cigars爬虫工具，使用multi模块实现多进程抓取，目前运行时间50S'''
 
 def sleeptime(hour, min, sec):
     return hour*3600 + min*60 + sec
+
+def init(args):
+    ''' store the counter for later use '''
+    global writenums
+    writenums = args
 
 '''links构造网站pagelist，items构造雪茄库存状态，cigars抓取名称及价格存入csv'''
 
@@ -66,6 +71,7 @@ def getinfo(items, cigars, header):
             html = r.text
             itempage = BeautifulSoup(html, "html.parser")
             itemlist = itempage.find_all('td', class_ = "col item", attrs={"data-th":"Product Name"})
+            title = itempage.find('td', class_="col data",attrs={'data-th':'Brand'}).string.strip()
             times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             print('开始获取商品数据', tmp_items)
             #获取到雪茄商品页面中的商品列表，通常为1支，1盒及价格等。
@@ -84,7 +90,7 @@ def getinfo(items, cigars, header):
                         details = '0'
                     tmp_detailed = float(details.strip('%')) / 100 * float(price) + float(price)
                     detailed = '%.2f' % tmp_detailed
-                    cigarinfo = {'cigar_name':cigarlist,'detailed':detailed,'stock':stock,'details':details,
+                    cigarinfo = {'title':title,'cigar_name':cigarlist,'detailed':detailed,'stock':stock,'details':details,
                                  'cigar_price':price,'itemurl':str(itemurl),'times':times}
                     cigars.put(cigarinfo)
                 except Exception as err:
@@ -97,6 +103,7 @@ def save_to_mongodb(cigars):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigars']
     collection = db['stock']
+    global writenums
     while True:
         while cigars.empty():
             time.sleep(0.02)
@@ -111,6 +118,9 @@ def save_to_mongodb(cigars):
                 tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
+                with writenums.get_lock():
+                    writenums.value += 1
+                #print("已写入  " + str(writenums) + "  条数据")
             except Exception as err:
                 print(cigarinfo+"    存储报错")
                 print(err)
@@ -118,12 +128,13 @@ def save_to_mongodb(cigars):
 
 def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave ):
     '''组织抓取过程'''
+    writenums = Value('i', 0)
     getallurl_nums = maxurl
     getallurl_pool = Pool(processes=getallurl_nums)
     getinfo_nums = maxinfo
     getinfo_pool = Pool(processes=getinfo_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,))
     links = Manager().Queue()
     items = Manager().Queue()
     cigars = Manager().Queue()
@@ -147,6 +158,7 @@ def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave ):
         cigars.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
+    print("已写入  " + str(writenums) + "  条数据")
 
 
 second = sleeptime(1, 0, 0) #间隔运行时间 时：分：秒
@@ -154,10 +166,10 @@ if __name__ == '__main__':
 #    while True:
         firsturl = "https://selected-cigars.com/en/cigars?p="  #网站列表页模板
         startlist = 1 #商品列表起始
-        endlist = 17 #商品列表终页
+        endlist = 14 #商品列表终页
         maxurl = 5  #解析列表页，获取商品链接的进程
         maxinfo = 10 #获取商品信息的进程
-        maxsave = 5  #存储进程
+        maxsave = 3  #存储进程
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
         st = time.time()
