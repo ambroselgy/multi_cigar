@@ -20,7 +20,7 @@ def save_to_mongodb(cigars):
         print(err)
 
 def getinfo():
-        tmp_links = "https://www.cigarworld.de/en/zigarren/cuba/regulares/bolivar-01001"
+        tmp_links = "https://www.cigarworld.de/en/zigarren/cuba/regulares/vegueros-01023"
         print("开始获取 "+str(tmp_links)+"  数据")
         header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
         r = requests.get(tmp_links, headers=header)
@@ -32,9 +32,9 @@ def getinfo():
         times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         for i in item_list:
                 cigar_name = i.find('div',attrs={'class':"ws-u-1 DetailVariant-variantName",}).find(text=True).strip()
-                print(cigar_name)
+                #print(cigar_name)
                 pricelist = i.select('div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span')
-                numslist = i.find_all('span', attrs={'class':re.compile(r'einheitlabel')})
+                numslist = i.find_all('span', attrs={'class': re.compile(r'einheitlabel')})
                 tmp_itemurl = i.find('a',attrs={'class':'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
                 itemurl = 'https://www.cigarworld.de'+tmp_itemurl
                 if len(pricelist) == len(numslist):
@@ -54,5 +54,9 @@ def getinfo():
                         cigarinfo = {'cigar_name': name, 'detailed': detailed, 'stock': stock,
                                      'details': details,
                                      'cigar_price': price, 'itemurl': itemurl, 'times': times}
-                        #print(tmp_name)
+                        #print(cigarinfo)
+                else:
+                        print("比对不通过")
+                        print(pricelist)
+                        print(numslist)
 getinfo()

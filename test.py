@@ -9,7 +9,7 @@ import datetime
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigarworld']
-    collection = db['stock']
+    collection = db['test']
     while True:
         while item_info_queue.empty():
             time.sleep(0.02)
@@ -22,8 +22,8 @@ def save_to_mongodb(item_info_queue):
                 tmp_data = cigarinfo
                 tmp_cigar = cigarinfo["cigar_name"]
                 tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
-                print(tmp_data)
-                print("队列剩余"+str(item_info_queue.qsize()))
+                #print(tmp_data)
+                #print("队列剩余"+str(item_info_queue.qsize()))
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
             except Exception as err:
@@ -65,7 +65,8 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                                 stock = tmp_stock
                                         else:
                                                 stock = "in stock"
-                                        nums = re.sub(r'\D',"",tmp_nums)
+                                        #nums = re.sub(r'\D',"",tmp_nums)
+                                        nums = tmp_nums
                                         name = title+" "+tmp_name+'  '+str(nums)
                                         details = '0'
                                         detailed = price
@@ -74,6 +75,8 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                                      'cigar_price': price, 'itemurl': itemurl, 'times': times}
                                         #print(cigarinfo)
                                         item_info_queue.put(cigarinfo)
+                        else:
+                            print("比对不通过 "+tmp_links)
             except Exception as err:
                 print(str(tmp_links)+"    商品获取报错")
                 print(err)
