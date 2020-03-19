@@ -120,7 +120,6 @@ def save_to_mongodb(cigars):
                     "$set":tmp_data},upsert=True)
                 with writenums.get_lock():
                     writenums.value += 1
-                #print("已写入  " + str(writenums) + "  条数据")
             except Exception as err:
                 print(cigarinfo+"    存储报错")
                 print(err)

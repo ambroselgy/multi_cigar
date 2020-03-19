@@ -2,20 +2,14 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from multiprocessing import Process, Queue, Pool, Manager, Value
+from multiprocessing import Pool, Manager
 from pymongo import MongoClient
 import datetime
-
-def init(args):
-    ''' store the counter for later use '''
-    global writenums
-    writenums = args
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigarworld']
     collection = db['test']
-    global writenums
     while True:
         while item_info_queue.empty():
             time.sleep(0.02)
@@ -28,12 +22,8 @@ def save_to_mongodb(item_info_queue):
                 tmp_data = cigarinfo
                 tmp_cigar = cigarinfo["cigar_name"]
                 tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
-                #print(tmp_data)
-                #print("队列剩余"+str(item_info_queue.qsize()))
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
-                with writenums.get_lock():
-                    writenums += 1
             except Exception as err:
                 print(tmp_cigar+"    存储报错")
                 print(err)
@@ -53,13 +43,14 @@ def get_item_info(item_url_queue, item_info_queue, header):
                 r = requests.get(tmp_links, headers=header)
                 while r.status_code != 200:
                     time.sleep(10)
+                    print(r.status_code)
                     print("重新获取  "+str(tmp_links)+"   数据")
                     r = requests.get(tmp_links, headers=header)
                 r.encoding = 'utf-8'
                 html = r.text
                 soup = BeautifulSoup(html, "lxml")
                 item_list = soup.select("li.ws-g.DetailVariant")
-                title = soup.find('h1').string
+                title = soup.find('h1').string.strip()
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 for i in item_list:
                         cigar_name = i.find('div',attrs={'class':"ws-u-1 DetailVariant-variantName",}).find(text=True).strip()
@@ -82,10 +73,9 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                         name = title+" "+tmp_name+'  '+str(nums)
                                         details = '0'
                                         detailed = price
-                                        cigarinfo = {'title':title,'cigar_name': name, 'detailed': detailed,
-                                                     'stock': stock,'details': details,'cigar_price': price,
+                                        cigarinfo = {'title': title, 'cigar_name': name, 'detailed': detailed,
+                                                     'stock': stock, 'details': details, 'cigar_price': price,
                                                      'itemurl': itemurl, 'times': times}
-                                        #print(cigarinfo)
                                         item_info_queue.put(cigarinfo)
                         else:
                             print("比对不通过 "+tmp_links)
@@ -99,12 +89,10 @@ def get_item_url(page_links_queue, item_url_queue, header):
     while True:
         tmp_links = page_links_queue.get()
         print("开始解析 " + str(tmp_links) + "  数据")
-
         if tmp_links == "#END#":  # 遇到结束标志，推出进程
             page_links_queue.put("#END#")
             print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
-
         else:
             try:
                 r = requests.get(tmp_links, headers=header)
@@ -128,13 +116,12 @@ def make_page_links(page_links, page_links_queue):
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
-    writenums = Value('i', 0)
     get_item_url_nums = maxurl
     get_item_url_pool = Pool(processes=get_item_url_nums)
     get_item_info_nums = maxinfo
     get_item_info_pool = Pool(processes=get_item_info_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,))
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
@@ -151,11 +138,11 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     get_item_url_pool.close()
     get_item_url_pool.join()
 
-    for i in range(0,get_item_info_nums):
+    for i in range(0, get_item_info_nums):
         item_url_queue.put("#END#")
     get_item_info_pool.close()
     get_item_info_pool.join()
-    for i in range(0,save_to_mongodb_nums):
+    for i in range(0, save_to_mongodb_nums):
         item_info_queue.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
@@ -164,7 +151,6 @@ def sleeptime(hour, min, sec):
     return hour*3600 + min*60 + sec
 second = sleeptime(1, 0, 0) #间隔运行时间 时：分：秒
 if __name__ == '__main__':
-#    while True:
         links = ['https://www.cigarworld.de/en/zigarren/cuba?von=0',
                  'https://www.cigarworld.de/en/zigarren/cuba?von=30',
                  'https://www.cigarworld.de/en/zigarren/cuba?von=60']  #网站列表页模板
