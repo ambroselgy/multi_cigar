@@ -33,7 +33,8 @@ def getinfo():
         for i in item_list:
                 cigar_name = i.find('div',attrs={'class':"ws-u-1 DetailVariant-variantName",}).find(text=True).strip()
                 #print(cigar_name)
-                pricelist = i.select('div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span')
+                pricelist = i.select('div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span.preis')
+                #print(pricelist)
                 numslist = i.find_all('span', attrs={'class': re.compile(r'einheitlabel')})
                 tmp_itemurl = i.find('a',attrs={'class':'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
                 itemurl = 'https://www.cigarworld.de'+tmp_itemurl
@@ -41,6 +42,7 @@ def getinfo():
                     for i in range(len(pricelist)):
                         tmp_name = str(cigar_name).replace('\n', '').strip()
                         price = pricelist[i].text.replace("€", "").strip()
+                        #print(price)
                         tmp_nums = numslist[i].text
                         tmp_stock = numslist[i].get('title').strip()
                         if tmp_stock:
@@ -54,7 +56,7 @@ def getinfo():
                         cigarinfo = {'cigar_name': name, 'detailed': detailed, 'stock': stock,
                                      'details': details,
                                      'cigar_price': price, 'itemurl': itemurl, 'times': times}
-                        #print(cigarinfo)
+                        print(cigarinfo)
                 else:
                         print("比对不通过")
                         print(pricelist)
