@@ -2,14 +2,20 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool, Manager, Value
 from pymongo import MongoClient
 import datetime
+
+def init(args):
+    global writenums
+    writenums = args
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigarworld']
     collection = db['test']
+    global writenums
+
     while True:
         while item_info_queue.empty():
             time.sleep(0.02)
@@ -24,6 +30,8 @@ def save_to_mongodb(item_info_queue):
                 tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
+                with writenums.get_lock():
+                    writenums.value += 1
             except Exception as err:
                 print(tmp_cigar+"    存储报错")
                 print(err)
@@ -116,12 +124,13 @@ def make_page_links(page_links, page_links_queue):
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
+    writenums = Value('i', 0)
     get_item_url_nums = maxurl
     get_item_url_pool = Pool(processes=get_item_url_nums)
     get_item_info_nums = maxinfo
     get_item_info_pool = Pool(processes=get_item_info_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums)
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums, initializer=init, initargs=(writenums,))
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
@@ -146,6 +155,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
         item_info_queue.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
+    print("已写入  " + str(writenums) + "  条数据")
 
 def sleeptime(hour, min, sec):
     return hour*3600 + min*60 + sec

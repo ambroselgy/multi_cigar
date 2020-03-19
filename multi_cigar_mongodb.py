@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import time
-from multiprocessing import Process, Queue, Pool, Manager, Value
+from multiprocessing import Pool, Manager, Value
 from pymongo import MongoClient
 import datetime
 '''间隔时间运行的selected-cigars爬虫工具，使用multi模块实现多进程抓取，目前运行时间50S'''
@@ -90,8 +90,8 @@ def getinfo(items, cigars, header):
                         details = '0'
                     tmp_detailed = float(details.strip('%')) / 100 * float(price) + float(price)
                     detailed = '%.2f' % tmp_detailed
-                    cigarinfo = {'title':title,'cigar_name':cigarlist,'detailed':detailed,'stock':stock,'details':details,
-                                 'cigar_price':price,'itemurl':str(itemurl),'times':times}
+                    cigarinfo = {'title':title, 'cigar_name':cigarlist, 'detailed':detailed, 'stock':stock,
+                                 'details':details, 'cigar_price':price, 'itemurl':str(itemurl), 'times':times}
                     cigars.put(cigarinfo)
                 except Exception as err:
                     cigarlist = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
@@ -104,6 +104,7 @@ def save_to_mongodb(cigars):
     db = connect['cigars']
     collection = db['stock']
     global writenums
+
     while True:
         while cigars.empty():
             time.sleep(0.02)
@@ -115,7 +116,6 @@ def save_to_mongodb(cigars):
             try:
                 tmp_data = cigar
                 tmp_cigar = cigar["cigar_name"]
-                tmp_data.pop(list(filter(lambda k: tmp_data[k] == tmp_cigar, tmp_data))[0])
                 collection.update_one(filter={'cigar_name':tmp_cigar},update={
                     "$set":tmp_data},upsert=True)
                 with writenums.get_lock():
@@ -133,12 +133,11 @@ def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave ):
     getinfo_nums = maxinfo
     getinfo_pool = Pool(processes=getinfo_nums)
     save_to_mongodb_nums = maxsave
-    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums,initializer=init, initargs=(writenums,))
+    save_to_mongodb_pool = Pool(processes=save_to_mongodb_nums, initializer=init, initargs=(writenums,))
     links = Manager().Queue()
     items = Manager().Queue()
     cigars = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
-#    init()
     makelinks(links, firsturl, startlist, endlist)#调用函数构造list
     for index in range(0, getallurl_nums):#获取item list
         getallurl_pool.apply_async(func=getallurl, args=(links, items, header))
