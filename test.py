@@ -11,6 +11,7 @@ def init(args):
     global writenums
     writenums = args
 
+
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigarworld']

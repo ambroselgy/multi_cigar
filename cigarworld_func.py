@@ -7,65 +7,72 @@ from pymongo import MongoClient
 import datetime
 
 
+def sleeptime(hour, min, sec):
+    return hour * 3600 + min * 60 + sec
+
+
 def init(args):
     global writenums
     writenums = args
 
 
-def save_to_mongodb(item_info_queue):
-    connect = MongoClient(host='localhost', port=27017)
-    db = connect['cigarworld']
-    collection = db['test']
-    global writenums
+def make_page_links(page_links, page_links_queue):
+    for index in page_links:
+        print(index + "   放入链接池")
+        page_links_queue.put(index)
+    page_links_queue.put("#END#")
+
+
+def get_item_url(page_links_queue, item_url_queue, header):
 
     while True:
-        while item_info_queue.empty():
-            time.sleep(0.02)
-        cigarinfo = item_info_queue.get()
-        if cigarinfo == "#END#":  # 遇到退出标志，退出进程
-            print("save_to_mongodb Quit {}".format(page_links_queue.qsize()))
+        tmp_links = page_links_queue.get()
+        print("开始解析 " + str(tmp_links) + "  数据")
+        if tmp_links == "#END#":  # 遇到结束标志，推出进程
+            page_links_queue.put("#END#")
+            print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
         else:
             try:
-                tmp_data = cigarinfo
-                tmp_cigar = cigarinfo["cigar_name"]
-                tmp_data.pop(
-                    list(
-                        filter(
-                            lambda k: tmp_data[k] == tmp_cigar,
-                            tmp_data))[0])
-                collection.update_one(
-                    filter={
-                        'cigar_name': tmp_cigar}, update={
-                        "$set": tmp_data}, upsert=True)
-                with writenums.get_lock():
-                    writenums.value += 1
+                r = requests.get(tmp_links, headers=header)
+                r.encoding = 'utf-8'
+                html = r.text
+                soup = BeautifulSoup(html, "html.parser")
+                product = soup.find_all(
+                    'a', attrs={'search-result-item-inner'})
+                for i in product:
+                    tmp_url = i.get('href')
+                    url = 'https://www.cigarworld.de' + tmp_url
+                    item_url_queue.put(url)
             except Exception as err:
-                print(tmp_cigar + "    存储报错")
+                print(str(tmp_links) + "    列表页解析报错")
                 print(err)
 
 
 def get_item_info(item_url_queue, item_info_queue, header):
+
     while True:
+
         while item_url_queue.empty():
             time.sleep(0.01)
+
         tmp_links = item_url_queue.get()
         if tmp_links == "#END#":  # 遇到结束标志，推出进程
             print("get_item_info Quit {}".format(item_url_queue.qsize()))
             print("队列剩余" + str(item_info_queue.qsize()))
             break
         else:
-            try:
-                print("开始获取 " + str(tmp_links) + "  数据")
+            print("开始获取 " + str(tmp_links) + "  数据")
+            r = requests.get(tmp_links, headers=header)
+            while r.status_code != 200:
+                time.sleep(10)
+                print(r.status_code)
+                print("重新获取  " + str(tmp_links) + "   数据")
                 r = requests.get(tmp_links, headers=header)
-                while r.status_code != 200:
-                    time.sleep(10)
-                    print(r.status_code)
-                    print("重新获取  " + str(tmp_links) + "   数据")
-                    r = requests.get(tmp_links, headers=header)
-                r.encoding = 'utf-8'
-                html = r.text
-                soup = BeautifulSoup(html, "lxml")
+            r.encoding = 'utf-8'
+            html = r.text
+            soup = BeautifulSoup(html, "lxml")
+            try:
                 item_list = soup.select("li.ws-g.DetailVariant")
                 title = soup.find('h1').string.strip()
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -117,37 +124,37 @@ def get_item_info(item_url_queue, item_info_queue, header):
                 print(err)
 
 
-def get_item_url(page_links_queue, item_url_queue, header):
+def save_to_mongodb(item_info_queue):
+    connect = MongoClient(host='localhost', port=27017)
+    db = connect['cigarworld']
+    collection = db['test']
+    global writenums
 
     while True:
-        tmp_links = page_links_queue.get()
-        print("开始解析 " + str(tmp_links) + "  数据")
-        if tmp_links == "#END#":  # 遇到结束标志，推出进程
-            page_links_queue.put("#END#")
-            print("get_item_url Quit {}".format(page_links_queue.qsize()))
+        while item_info_queue.empty():
+            time.sleep(0.02)
+        cigarinfo = item_info_queue.get()
+        if cigarinfo == "#END#":  # 遇到退出标志，退出进程
+            print("save_to_mongodb Quit {}".format(page_links_queue.qsize()))
             break
         else:
             try:
-                r = requests.get(tmp_links, headers=header)
-                r.encoding = 'utf-8'
-                html = r.text
-                soup = BeautifulSoup(html, "html.parser")
-                product = soup.find_all(
-                    'a', attrs={'search-result-item-inner'})
-                for i in product:
-                    tmp_url = i.get('href')
-                    url = 'https://www.cigarworld.de' + tmp_url
-                    item_url_queue.put(url)
+                tmp_data = cigarinfo
+                tmp_cigar = cigarinfo["cigar_name"]
+                tmp_data.pop(
+                    list(
+                        filter(
+                            lambda k: tmp_data[k] == tmp_cigar,
+                            tmp_data))[0])
+                collection.update_one(
+                    filter={
+                        'cigar_name': tmp_cigar}, update={
+                        "$set": tmp_data}, upsert=True)
+                with writenums.get_lock():
+                    writenums.value += 1
             except Exception as err:
-                print(str(tmp_links) + "    列表页解析报错")
+                print(tmp_cigar + "    存储报错")
                 print(err)
-
-
-def make_page_links(page_links, page_links_queue):
-    for index in page_links:
-        print(index + "   放入链接池")
-        page_links_queue.put(index)
-    page_links_queue.put("#END#")
 
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
@@ -195,10 +202,6 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
     print("已写入  " + str(writenums) + "  条数据")
-
-
-def sleeptime(hour, min, sec):
-    return hour * 3600 + min * 60 + sec
 
 
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
