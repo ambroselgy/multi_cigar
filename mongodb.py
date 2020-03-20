@@ -1,8 +1,8 @@
-#_*_ coding : UTF-8 _*_
-#开发人员：Diya
-#开发时间：2020/3/16 13:55
+# _*_ coding : UTF-8 _*_
+# 开发人员：Diya
+# 开发时间：2020/3/16 13:55
 #文件名称: mongodb.PY
-#开发工具：PyCharm
+# 开发工具：PyCharm
 from pymongo import MongoClient
 import datetime
 
@@ -14,7 +14,12 @@ collection = db['stock']
 # collection.insert_one({"name":"user88", "age":99, "sex":"male"})
 
 
-tmp_data = {'age':999,'sex':'it is ok'}
-tmp_filter = {'$and':[{'name':{'$regex':'user'}},{'stock':{'$regex':'test'}}]}
+tmp_data = {'age': 999, 'sex': 'it is ok'}
+tmp_filter = {'$and': [{'name': {'$regex': 'user'}},
+                       {'stock': {'$regex': 'test'}}]}
 collection.find()
-collection.update_many(filter=tmp_filter, update={"$set":tmp_data}, upsert=True)
+collection.update_many(
+    filter=tmp_filter,
+    update={
+        "$set": tmp_data},
+    upsert=True)
