@@ -113,8 +113,8 @@ def get_item_info(item_url_queue, item_info_queue, header):
                             'times': times}
                         item_info_queue.put(cigarinfo)
             except Exception as err:
-            print(str(tmp_items) + "    商品获取报错")
-            print(err)
+                print(str(tmp_items) + "    商品获取报错")
+                print(err)
 
 
 def save_to_mongodb(item_info_queue):
