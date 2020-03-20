@@ -184,11 +184,11 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
             func=get_item_url, args=(
-                page_links_queue, item_url_queue, header))
+                page_links_queue, item_url_queue, header,))
     for index in range(0, get_item_info_nums):
         get_item_info_pool.apply_async(
             func=get_item_info, args=(
-                item_url_queue, item_info_queue, header))
+                item_url_queue, item_info_queue, header,))
     for index in range(0, save_to_mongodb_nums):
         save_to_mongodb_pool.apply_async(
             func=save_to_mongodb, args=(
