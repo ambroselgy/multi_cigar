@@ -76,16 +76,14 @@ def get_item_info(item_url_queue, item_info_queue, header):
             html = r.text
             soup = BeautifulSoup(html, "html.parser")
             try:
-                itemlist = soup.find_all(
+                item_list = soup.find_all(
                     'td', class_="col item", attrs={
                         "data-th": "Product Name"})
                 title = soup.find(
                     'td', class_="col data", attrs={
                         'data-th': 'Brand'}).string.strip()
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-                print('开始获取商品数据', tmp_items)
-                # 获取到雪茄商品页面中的商品列表，通常为1支，1盒及价格等。
-                for i in itemlist:
+                for i in item_list:
                         tmp_stock = i.find('div', class_='stockindicator-content')
                         stock = tmp_stock.find('span').string.strip()
                         cigarlist = i.find(
@@ -128,14 +126,14 @@ def save_to_mongodb(item_info_queue):
     while True:
         while item_info_queue.empty():
             time.sleep(0.02)
-        cigar = item_info_queue.get()
-        if cigar == "#END#":  # 遇到退出标志，退出进程
+        cigarinfo = item_info_queue.get()
+        if cigarinfo == "#END#":  # 遇到退出标志，退出进程
             print("数据存储完成")
             break
         else:
             try:
-                tmp_data = cigar
-                tmp_cigar = cigar["cigar_name"]
+                tmp_data = cigarinfo
+                tmp_cigar = cigarinfo["cigar_name"]
                 tmp_data.pop(
                     list(
                         filter(
@@ -148,7 +146,7 @@ def save_to_mongodb(item_info_queue):
                 with writenums.get_lock():
                     writenums.value += 1
             except Exception as err:
-                print(cigarinfo + "    存储报错")
+                print(tmp_cigar + "    存储报错")
                 print(err)
 
 

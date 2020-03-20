@@ -1,10 +1,10 @@
-def save_to_csv(cigars, filename):
+def save_to_csv(item_info_queue, filename):
     global writenums
     while True:
-        while cigars.empty():
+        while item_info_queue.empty():
             time.sleep(0.02)
-        cigar = cigars.get()
-        if cigar == "#END#":  # 遇到退出标志，退出进程
+        cigarinfo = item_info_queue.get()
+        if cigarinfo == "#END#":  # 遇到退出标志，退出进程
             print("数据存储完成")
             break
         else:
@@ -26,12 +26,12 @@ def save_to_csv(cigars, filename):
                     if not [row for row in rowreader]:
                         rowwriter.writerow(
                             ['品牌', '雪茄', '税前价格', '库存', '折扣', '原价', '链接', '更新时间'])
-                        csvwriter.writerow(cigar)
+                        csvwriter.writerow(cigarinfo)
                         csvfile.close()
                         with writenums.get_lock():
                             writenums.value += 1
                     else:
-                        csvwriter.writerow(cigar)
+                        csvwriter.writerow(cigarinfo)
                         csvfile.close()
                         with writenums.get_lock():
                             writenums.value += 1
