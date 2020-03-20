@@ -33,11 +33,15 @@ def get_item_url(page_links_queue, item_url_queue, header):
             print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
         else:
-            try:
+            r = requests.get(tmp_links, headers=header)
+            while r.status_code != 200:
+                time.sleep(10)
+                print("重新解析  " + str(tmp_links) + "   数据")
                 r = requests.get(tmp_links, headers=header)
-                r.encoding = 'utf-8'
-                html = r.text
-                soup = BeautifulSoup(html, "html.parser")
+            r.encoding = 'utf-8'
+            html = r.text
+            soup = BeautifulSoup(html, "html.parser")
+            try:
                 product = soup.find_all(
                     'a', attrs={'search-result-item-inner'})
                 for i in product:

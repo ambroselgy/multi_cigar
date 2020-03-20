@@ -32,15 +32,15 @@ def get_item_url(page_links_queue, item_url_queue, header):
             print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
         else:
-            try:
+            r = requests.get(tmp_links, headers=header)
+            while r.status_code != 200:
+                time.sleep(10)
+                print("重新解析  " + str(tmp_links) + "   数据")
                 r = requests.get(tmp_links, headers=header)
-                while r.status_code != 200:
-                    time.sleep(10)
-                    print("重新获取  " + str(tmp_links) + "   数据")
-                    r = requests.get(tmp_links, headers=header)
-                r.encoding = 'utf-8'
-                html = r.text
-                soup = BeautifulSoup(html, "html.parser")
+            r.encoding = 'utf-8'
+            html = r.text
+            soup = BeautifulSoup(html, "html.parser")
+            try:
                 product = soup.find_all(
                     'li', class_="item product product-item")
                 for i in product:
@@ -74,12 +74,12 @@ def get_item_info(item_url_queue, item_info_queue, header):
                 r = requests.get(tmp_items, headers=header)
             r.encoding = 'utf-8'
             html = r.text
-            itempage = BeautifulSoup(html, "html.parser")
+            soup = BeautifulSoup(html, "html.parser")
             try:
-                itemlist = itempage.find_all(
+                itemlist = soup.find_all(
                     'td', class_="col item", attrs={
                         "data-th": "Product Name"})
-                title = itempage.find(
+                title = soup.find(
                     'td', class_="col data", attrs={
                         'data-th': 'Brand'}).string.strip()
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
