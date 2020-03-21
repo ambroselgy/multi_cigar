@@ -1,6 +1,6 @@
 import time
 import datetime
-from cigar_class import Scigars
+from cigars_class import Scigars,Cigarworld
 
 if __name__ == '__main__':
     #    while True:
@@ -14,5 +14,8 @@ if __name__ == '__main__':
     runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
     st = time.time()
     scigars = Scigars()
+    cigarworld = Cigarworld()
     scigars.run()
+    cigarworld.run()
+
     print(time.time() - st)
