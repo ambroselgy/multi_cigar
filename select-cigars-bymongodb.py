@@ -77,50 +77,47 @@ def get_item_info(item_url_queue, item_info_queue, header):
             soup = BeautifulSoup(html, "html.parser")
             times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             try:
-                cigar_name = soup.find('span',class_='base',attrs={'data-ui-id':'page-title-wrapper'}).text.strip()
-                if soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"}):
-                    item_list = soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"})
-                    if soup.find('td', class_="col data", attrs={'data-th': 'Brand'}):
-                        brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'}).string.strip()
-                    else:
-                        brand = 'other'
-                    for i in item_list:
-                            tmp_stock = i.find('div', class_='stockindicator-content')
-                            stock = tmp_stock.find('span').string.strip()
-                            if i.find('strong', class_="product-item-name sc-grouped-title"):
-                                group = i.find('strong', class_="product-item-name sc-grouped-title").string.strip()
-                            else:
-                                group = i.find('span',class_="base").string.strip()
-                            cigarprice = i.find('span', attrs={
-                                                "data-price-type": "finalPrice"}).find('span', class_="price").string.strip()
-                            tmp_price = cigarprice[1:]
-                            price = tmp_price.replace(",", "")
-                            itemurl = tmp_items
-                            if i.find('span', class_="savingPercent"):
-                                details = i.find(
-                                    'span', class_="savingPercent").string.strip().replace(
-                                    " ", "")
-                            else:
-                                details = '0'
-                            tmp_detailed = float(
-                                details.strip('%')) / 100 * float(price) + float(price)
-                            detailed = '%.2f' % tmp_detailed
-                            cigarinfo = {
-                                'Brand': brand,
-                                'cigar_name': cigar_name,
-                                'group':group,
-                                'detailed': detailed,
-                                'stock': stock,
-                                'details': details,
-                                'cigar_price': price,
-                                'itemurl': str(itemurl),
-                                'times': times}
-                            item_info_queue.put(cigarinfo)
+                cigar_name = soup.find('span', class_='base', attrs={'data-ui-id': 'page-title-wrapper'}).text.strip()
+                item_list = soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"})
+                tmp_brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'})
+                if tmp_brand:
+                    brand = tmp_brand.text.strip()
                 else:
-                    if soup.find('td', class_="col data", attrs={'data-th': 'Brand'}):
-                        brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'}).string.strip()
-                    else:
-                        brand = 'other'
+                    brand = 'other'
+                if item_list:
+                    for i in item_list:
+                        tmp_stock = i.find('div', class_='stockindicator-content')
+                        stock = tmp_stock.find('span').string.strip()
+                        tmp_group = i.find('strong', class_="product-item-name sc-grouped-title")
+                        if tmp_group:
+                            group = tmp_group.string.strip()
+                        else:
+                            group = i.find('span', class_="base").string.strip()
+                        cigarprice = i.find('span', attrs={
+                            "data-price-type": "finalPrice"}).find('span', class_="price").string.strip()
+                        tmp_price = cigarprice[1:]
+                        price = tmp_price.replace(",", "")
+                        itemurl = tmp_items
+                        tmp_details = i.find('span', class_="savingPercent")
+                        if tmp_details:
+                            details = tmp_details.string.strip().replace(" ", "")
+                        else:
+                            details = '0'
+                        tmp_detailed = float(
+                            details.strip('%')) / 100 * float(price) + float(price)
+                        detailed = '%.2f' % tmp_detailed
+                        cigarinfo = {
+                            'Brand': brand,
+                            'cigar_name': cigar_name,
+                            'group': group,
+                            'detailed': detailed,
+                            'stock': stock,
+                            'details': details,
+                            'cigar_price': price,
+                            'itemurl': str(itemurl),
+                            'times': times}
+                        item_info_queue.put(cigarinfo)
+                else:
                     group = cigar_name
                     tmp_stock = soup.find('div', class_='stockindicator-content')
                     stock = tmp_stock.find('span').string.strip()
@@ -129,10 +126,9 @@ def get_item_info(item_url_queue, item_info_queue, header):
                     tmp_price = cigarprice[1:]
                     price = tmp_price.replace(",", "")
                     itemurl = tmp_items
-                    if soup.find('span', class_="savingPercent"):
-                        details = soup.find(
-                            'span', class_="savingPercent").string.strip().replace(
-                            " ", "")
+                    tmp_details = soup.find('span', class_="savingPercent")
+                    if tmp_details:
+                        details = tmp_details.string.strip().replace(" ", "")
                     else:
                         details = '0'
                     tmp_detailed = float(
@@ -152,7 +148,6 @@ def get_item_info(item_url_queue, item_info_queue, header):
             except Exception as err:
                 print(str(tmp_items) + "    商品获取报错")
                 print(err)
-
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
     db = connect['cigars']
@@ -170,11 +165,7 @@ def save_to_mongodb(item_info_queue):
             try:
                 tmp_data = cigarinfo
                 group = cigarinfo["group"]
-                tmp_data.pop(
-                    list(
-                        filter(
-                            lambda k: tmp_data[k] == group,
-                            tmp_data))[0])
+                del tmp_data['group']
                 collection.update_one(
                     filter={
                         'group': group}, update={

@@ -78,7 +78,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
             soup = BeautifulSoup(html, "lxml")
             try:
                 item_list = soup.select("li.ws-g.DetailVariant")
-                title = soup.find('h1').string.strip()
+                brand = soup.find('h1').string.strip()
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 for i in item_list:
                     cigar_name = i.find(
@@ -98,7 +98,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
                     itemurl = 'https://www.cigarworld.de' + tmp_itemurl
                     if len(pricelist) == len(numslist):
                         for i in range(len(pricelist)):
-                            tmp_name = str(cigar_name)
+                            tmp_name = brand + " " + str(cigar_name)
                             price = pricelist[i].text.replace("€", "").strip()
                             tmp_nums = numslist[i].text
                             tmp_stock = numslist[i].get('title').strip()
@@ -108,12 +108,13 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                 stock = "in stock"
                             #nums = re.sub(r'\D',"",tmp_nums)
                             nums = tmp_nums
-                            name = title + " " + tmp_name + '  ' + str(nums)
+                            group = tmp_name + '  ' + str(nums)
                             details = '0'
                             detailed = price
                             cigarinfo = {
-                                'title': title,
-                                'cigar_name': name,
+                                'Brand': brand,
+                                'cigar_name': tmp_name,
+                                'group':group,
                                 'detailed': detailed,
                                 'stock': stock,
                                 'details': details,
@@ -144,15 +145,11 @@ def save_to_mongodb(item_info_queue):
         else:
             try:
                 tmp_data = cigarinfo
-                tmp_cigar = cigarinfo["cigar_name"]
-                tmp_data.pop(
-                    list(
-                        filter(
-                            lambda k: tmp_data[k] == tmp_cigar,
-                            tmp_data))[0])
+                group = cigarinfo["group"]
+                del tmp_data['group']
                 collection.update_one(
                     filter={
-                        'cigar_name': tmp_cigar}, update={
+                        'group': group}, update={
                         "$set": tmp_data}, upsert=True)
                 with writenums.get_lock():
                     writenums.value += 1

@@ -1,135 +1,15 @@
-<li class="ws-g DetailVariant" data-sort="{&quot;name&quot;:&quot;Coronas Especiales&quot;,&quot;price&quot;:&quot;23.10&quot;,&quot;rating&quot;:&quot;4&quot;,&quot;quality&quot;:&quot;88&quot;,&quot;taste&quot;:&quot;6&quot;,&quot;diameter&quot;:&quot;1.51&quot;,&quot;length&quot;:&quot;15.24&quot;}" data-addtocart="loader">
-
-	<div class="ws-u-1 DetailVariant-variantName">
-		Coronas Especiales					</div>
-
-
-	<a class="ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image" href="/en/zigarren/cuba/regulares/cohiba-zigarren-coronas-especiales-01002_10" title="Cohiba Coronas Especiales">
-		<img src="/bilder/detail/2_10_44834.jpg" style="width: 79%; height: auto;" alt="Coronas Especiales">	</a>
-
-	<a class="ws-u-1 ws-u-lg-11-24 ws-u-xl-13-24 DetailVariant-col DetailVariant-data" href="/en/zigarren/cuba/regulares/cohiba-zigarren-coronas-especiales-01002_10" title="Cohiba Coronas Especiales">
-		<div class="ws-g">
-			<div class="ws-u-1 DetailVariant-dataName">
-								<span>Coronas Especiales</span>
-											</div>
-			<div class="ws-u-1">
-				<div class="ws-g">
-
-					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
-						<span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span></div></span>
-                    	<span class="hidden">4 Ratings</span>
-                    	<span class="DetailVariant-dataTitle">88 Ratings</span>
-					</div>
-
-					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
-						<span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star inactive"></span><span class="fa fa-star inactive"></span></div></span>
-                    	<span class="hidden">6 Ratings</span>
-                    	<span class="DetailVariant-dataTitle">Quality</span>
-					</div>
-
-					<div class="ws-u-1 ws-u-lg-12-24 ws-u-xl-6-24 DetailVariant-dataContent">
-							                        <span class="DetailVariant-dataValue nobr"><div class="rating "><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf"></span><span class="fa fa-leaf inactive"></span><span class="fa fa-leaf inactive"></span></div></span>
-	                        <span class="hidden">6 Ratings</span>
-							<span class="DetailVariant-dataTitle">
-								Strength	                    	                    		<span class="DetailVariant-dataInfo">                <span><img src="/img/TAM.gif" class="herstellungsart" alt="Fabrication Totalmente a mano - (longfiller)" title="Fabrication Totalmente a mano - (longfiller)">TAM</span></span>
-	                    	</span>
-					</div>
-
-					<div class="ws-u-1 ws-u-lg-6-24 ws-u-xl-3-24 DetailVariant-dataContent DetailVariant-dataDiameter">
-													<span class="DetailVariant-dataValue">1.51</span>
-							<span class="DetailVariant-dataTitle">Ø</span>
-											</div>
-
-					<div class="ws-u-1 ws-u-lg-6-24 ws-u-xl-3-24 DetailVariant-dataContent DetailVariant-dataLength">
-													<span class="DetailVariant-dataValue">15.24</span>
-							<span class="DetailVariant-dataTitle">Length</span>
-											</div>
-
-				</div>
-			</div>
-					</div>
-	</a>
-
-
-	<div class="ws-u-1 ws-u-lg-9-24 ws-u-xl-7-24 DetailVariant-col">
-		<form class="ws-g DetailVariant-form" method="post" action="/en/warenkorb/show" data-ajaction="/en/ajax/warenkorb/show" data-addtocart="form">
-
-									<div class="ws-u-1 DetailVariant-formRow">
-						<div class="ws-g">
-							<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPriceTitle">Price</div>
-							<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantityTitle">Amount</div>
-							<div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnitTitle">Unit</div>
-						</div>
-					</div>
-
-								<div class="ws-u-1 DetailVariant-formRow">
-					<div class="ws-g">
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
-							<input type="hidden" name="wk_artikelid[1]" value="10">							<span class="preis">€ 23.10</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
-
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
-							<select name="wk_anzahl[1]" id="wk_anzahl_auswahl_1" class="wkanzahl"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option></select>                        </div>
-
-                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
-							<label for="wk_anzahl_auswahl_1">
-                                <input type="hidden" name="wk_einheit[1]" value="19"><span class="einheitlabel avail_1" title="">1er</span>
-                                					                                        </label>
-						</div>
-                    </div>
-				</div>
-				<div class="ws-u-1 DetailVariant-formRow">
-					<div class="ws-g">
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
-							<input type="hidden" name="wk_artikelid[2]" value="10">							<span class="preis">€ 115.50</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
-
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
-							<a href="/en/shop/createreminder/01002/20" class="ws-button ws-button-sm Reminder" title="" data-toggle="tooltip" data-placement="top" data-original-title="Notify me  via e-mail as soon as the item is back in stock."><i class="fa fa-envelope Reminder-icon"></i> &nbsp; <i class="fa fa-info Reminder-icon"></i></a>                        </div>
-
-                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
-							<label for="wk_anzahl_auswahl_2">
-                                <input type="hidden" name="wk_einheit[2]" value="20"><span class="einheitlabel avail_3" title="Currently not available">5er</span>
-                                					            <br><span class="avail_3">Currently not available</span>                            </label>
-						</div>
-                    </div>
-				</div>
-				<div class="ws-u-1 DetailVariant-formRow">
-					<div class="ws-g">
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formPrice">
-							<input type="hidden" name="wk_artikelid[3]" value="10">							<span class="preis">€ 577.50</span>							<nobr><span class="grundbetrag"></span></nobr>						</div>
-
-						<div class="ws-u-1-3 ws-u-lg-1-4 DetailVariant-formQuantity">
-							<select name="wk_anzahl[3]" id="wk_anzahl_auswahl_3" class="wkanzahl"><option value="0">0</option><option value="1">1</option></select>                        </div>
-
-                        <div class="ws-u-1-3 ws-u-lg-1-2 DetailVariant-formUnit">
-							<label for="wk_anzahl_auswahl_3">
-                                <input type="hidden" name="wk_einheit[3]" value="21"><span class="einheitlabel avail_1" title="">25er Kiste</span>
-                                					                                        </label>
-						</div>
-                    </div>
-				</div>
-
-				<div class="ws-u-1 DetailVariant-formRow">
-					<!--div class="ws-g">
-													<div class="ws-u-1 ws-u-lg-3-5 DetailVariant-formOrderlimit nobr" title="Sales volume limited to 25 cigars !">
-								Sales volume limited to 25 cigars !							</div>
-												<div class="ws-u-1 ws-u-lg-2-5 DetailVariant-formAddtocart">
-							<button class="ws-button ws-button-md ws-button-checkout DetailVariant-formAddtocartButton" type="submit">In den Warenkorb</button>
-						</div>
-					</div-->
-					                            						<div class="ws-g">
-    							<div class="ws-u-1 DetailVariant-formOrderlimit nobr" title="Sales volume limited to 25 cigars !">
-    								Sales volume limited to 25 cigars !    							</div>
-    						</div>
-                        																<div class="ws-g">
-							<div class="ws-u-1-1 ws-u-lg-1-4 DetailVariant-space"></div>
-							<div class="ws-u-1-1 ws-u-lg-1-4 DetailVariant-space"></div>
-							<div class="ws-u-1-1 ws-u-lg-1-2 DetailVariant-formAddtocart">
-								<button class="ws-button ws-button-md ws-button-checkout DetailVariant-formAddtocartButton" type="submit" data-addtocart="submit" data-toggle="tooltip" data-trigger="manual" data-title="Amount not selected" data-original-title="" title="">In den Warenkorb</button>
-							</div>
-						</div>
-														</div>
-
-		</form>
-	</div>
-
-</li>
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Piramides', 'group': 'Habanos Selección - Piramides', 'detailed': '134.08', 'stock': 'available', 'details': '-3%', 'cigar_price': '138.23', 'itemurl': 'https://selected-cigars.com/en/habanos-selektionen-piramides', 'times': '2020-03-21 00:21'}
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Petit Robustos', 'group': 'Habanos Selección - Petit Robustos', 'detailed': '165.60', 'stock': 'available', 'details': '-3%', 'cigar_price': '170.72', 'itemurl': 'https://selected-cigars.com/en/selektion-petit-robustos-cohiba-montecristo-romeo-y-julieta-partagas-h-upmann-la-casa-del-habano', 'times': '2020-03-21 00:21'}
+{'Brand': 'Guantanamera', 'cigar_name': 'Guantanamera - Selección SET', 'group': 'Guantanamera - Selección SET', 'detailed': '23.52', 'stock': 'available', 'details': '-3%', 'cigar_price': '24.25', 'itemurl': 'https://selected-cigars.com/en/guantanamera-selection-set', 'times': '2020-03-21 00:21'}
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Robustos', 'group': 'Habanos Selección - Robustos', 'detailed': '112.35', 'stock': 'available', 'details': '-3%', 'cigar_price': '115.82', 'itemurl': 'https://selected-cigars.com/en/habanos-selektionen-robustos', 'times': '2020-03-21 00:22'}
+{'Brand': 'Cohiba', 'cigar_name': 'Cohiba - 50 Shorts  2019', 'group': 'Cohiba - 50 Shorts  2019', 'detailed': '84.68', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '87.30', 'itemurl': 'https://selected-cigars.com/en/cohiba-50-short-1', 'times': '2020-03-21 00:22'}
+{'Brand': 'Romeo y Julieta', 'cigar_name': 'Romeo Y Julieta Exhibicion No. 3 --- aprox. 15 years old', 'group': 'Romeo Y Julieta Exhibicion No. 3 --- aprox. 15 years old', 'detailed': '10.48', 'stock': 'Sold Out', 'details': '0', 'cigar_price': '10.48', 'itemurl': 'https://selected-cigars.com/en/romeo-y-julieta-exhibicion-no-3-zirka-15-jahre-alt-1-max', 'times': '2020-03-21 00:22'}
+{'Brand': 'Partagás', 'cigar_name': 'Partagas - Partagas de Partagas No.1', 'group': 'Partagas - Partagas de Partagas No.1', 'detailed': '8.00', 'stock': 'Sold Out', 'details': '0', 'cigar_price': '8.00', 'itemurl': 'https://selected-cigars.com/en/partagas-partagas-de-partagas-no-1', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Petit Coronas', 'group': 'Habanos Selección - Petit Coronas', 'detailed': '46.58', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '48.02', 'itemurl': 'https://selected-cigars.com/en/seleccion-petit-coronas-zigarren-set', 'times': '2020-03-21 00:22'}
+{'Brand': 'Bolívar', 'cigar_name': 'Bolivar Belicosos Finos 25 cig. Jar', 'group': 'Bolivar Belicosos Finos 25 cig. Jar', 'detailed': '600.00', 'stock': 'Sold Out', 'details': '0', 'cigar_price': '600.00', 'itemurl': 'https://selected-cigars.com/en/bolivar-belicosos-finos-porzellan-jar', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Petit Coronas Tubos', 'group': 'Habanos Selección - Petit Coronas Tubos', 'detailed': '46.58', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '48.02', 'itemurl': 'https://selected-cigars.com/en/seleccion-petit-coronas-zigarren-set-1', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Cohiba - 25 Piramides Extra - Jar', 'group': 'Cohiba - 25 Piramides Extra - Jar', 'detailed': '790.00', 'stock': 'Sold Out', 'details': '0', 'cigar_price': '790.00', 'itemurl': 'https://selected-cigars.com/en/cohiba-piramides-extra-im-porzellan-jar-2642', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'La Gloria Cubana - Humidor Especial', 'group': 'La Gloria Cubana - Humidor Especial', 'detailed': '1680.00', 'stock': 'Sold Out', 'details': '0', 'cigar_price': '1680.00', 'itemurl': 'https://selected-cigars.com/en/la-gloria-cubana-humidor-especial-la-casa-del-habano', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Partagas - 170 Aniversario Humidor', 'group': 'Partagas - 170 Aniversario Humidor', 'detailed': '3669.51', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '3783.00', 'itemurl': 'https://selected-cigars.com/en/partagas-170-aniversario', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Partagas - Attersee Jar inkl. 50 Salomones', 'group': 'Partagas - Attersee Jar inkl. 50 Salomones', 'detailed': '3104.00', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '3200.00', 'itemurl': 'https://selected-cigars.com/en/kunst-trifft-genuss-special-release-von-herr-prof-dr-christian-ludwig-attersee-cigar-jar-inkl-50-partagas-salomones', 'times': '2020-03-21 00:22'}
+{'Brand': 'other', 'cigar_name': 'Habanos Selección - Robusto Tubo', 'group': 'Habanos Selección - Robusto Tubo', 'detailed': '70.33', 'stock': 'Sold Out', 'details': '-3%', 'cigar_price': '72.51', 'itemurl': 'https://selected-cigars.com/en/habanos-robusto-tubo-selektion', 'times': '2020-03-21 00:22'}

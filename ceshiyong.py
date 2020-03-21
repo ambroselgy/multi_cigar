@@ -8,7 +8,7 @@ import datetime
 
 def get_item_info():
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
-    html = 'https://selected-cigars.com/en/selektion-petit-robustos-cohiba-montecristo-romeo-y-julieta-partagas-h-upmann-la-casa-del-habano'
+    html = 'https://selected-cigars.com/en/cohiba-50-short-1'
     tmp_items = html
     if tmp_items == "#END#":  # 遇到结束标记，退出进程
         print("end")
@@ -24,14 +24,15 @@ def get_item_info():
         soup = BeautifulSoup(html, "html.parser")
         times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         try:
-            cigar_name = soup.find('span', class_='base', attrs={'data-ui-id':'page-title-wrapper'}).string.strip()
-            if soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"}):
-                print('yes')
-                item_list = soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"})
-                if soup.find('td', class_="col data", attrs={'data-th': 'Brand'}):
-                    brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'}).string.strip()
-                else:
-                    brand = 'other'
+            cigar_name = soup.find('span', class_='base', attrs={'data-ui-id': 'page-title-wrapper'}).text.strip()
+            item_list = soup.find_all('td', class_="col item", attrs={"data-th": "Product Name"})
+            tmp_brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'})
+            if tmp_brand:
+                brand = tmp_brand.text.strip()
+            else:
+                brand = 'other'
+            if item_list:
+                print('item_list 不空')
                 for i in item_list:
                     tmp_stock = i.find('div', class_='stockindicator-content')
                     stock = tmp_stock.find('span').string.strip()
@@ -44,10 +45,9 @@ def get_item_info():
                     tmp_price = cigarprice[1:]
                     price = tmp_price.replace(",", "")
                     itemurl = tmp_items
-                    if i.find('span', class_="savingPercent"):
-                        details = i.find(
-                            'span', class_="savingPercent").string.strip().replace(
-                            " ", "")
+                    details = i.find('span', class_="savingPercent").string.strip().replace(" ", "")
+                    if details:
+                        pass
                     else:
                         details = '0'
                     tmp_detailed = float(
@@ -65,12 +65,7 @@ def get_item_info():
                         'times': times}
                     print(cigarinfo)
             else:
-                if soup.find('td', class_="col data", attrs={'data-th': 'Brand'}):
-                    print('yes')
-                    brand = soup.find('td', class_="col data", attrs={'data-th': 'Brand'}).string.strip()
-                else:
-                    print('no')
-                    brand = 'other'
+                print('item_list为空')
                 group = cigar_name
                 tmp_stock = soup.find('div', class_='stockindicator-content')
                 stock = tmp_stock.find('span').string.strip()
