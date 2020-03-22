@@ -219,7 +219,7 @@ class Scigars():
             item_info_queue.put("#END#")
         save_to_mongodb_pool.close()
         save_to_mongodb_pool.join()
-        print("已写入  " + str(writenums) + "  条数据")
+        print("已写入  " + str(writenums.value) + "  条数据")
 
 class Cigarworld():
     def init(self,args):
@@ -398,7 +398,7 @@ class Cigarworld():
                     with writenums.get_lock():
                         writenums.value += 1
                 except Exception as err:
-                    print(tmp_cigar + "    存储报错")
+                    print(group + "    存储报错")
                     print(err)
 
     def run(self):
@@ -451,6 +451,6 @@ class Cigarworld():
             item_info_queue.put("#END#")
         save_to_mongodb_pool.close()
         save_to_mongodb_pool.join()
-        print("已写入  " + str(writenums) + "  条数据")
+        print("已写入  " + str(writenums.value) + "  条数据")
 
 

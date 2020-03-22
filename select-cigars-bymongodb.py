@@ -220,7 +220,7 @@ def start_work_mongodb(firsturl, startlist, endlist, maxurl, maxinfo, maxsave):
         item_info_queue.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
-    print("已写入  " + str(writenums) + "  条数据")
+    print("已写入  " + str(writenums.value) + "  条数据")
 
 
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒

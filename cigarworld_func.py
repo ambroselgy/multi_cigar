@@ -277,7 +277,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
         item_info_queue.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
-    print("已写入  " + str(writenums) + "  条数据")
+    print("已写入  " + str(writenums.value) + "  条数据")
 def start_work_csv(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
     filename = "./data/multe_" + str(runtime) + ".csv"
@@ -323,7 +323,7 @@ def start_work_csv(links, maxurl, maxinfo, maxsave):
         item_info_queue.put("#END#")
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
-    print("已写入  " + str(writenums) + "  条数据")
+    print("已写入  " + str(writenums.value) + "  条数据")
 
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
@@ -335,5 +335,5 @@ if __name__ == '__main__':
     maxsave = 1  # 存储进程
     runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
     st = time.time()
-    start_work_mongodb(links, maxurl, maxinfo, maxsave)
+    start_work_csv(links, maxurl, maxinfo, maxsave)
     print(time.time() - st)
