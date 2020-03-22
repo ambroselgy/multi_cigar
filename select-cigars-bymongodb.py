@@ -165,10 +165,15 @@ def save_to_mongodb(item_info_queue):
             try:
                 tmp_data = cigarinfo
                 group = cigarinfo["group"]
-                del tmp_data['group']
+                tmp_del = ['group', 'Brand', 'cigar_name', 'itemurl']
+#cigarinfo = {'Brand': brand,'cigar_name': cigar_name,'group': group,'detailed': detailed,'stock': stock,
+#             'details': details,'cigar_price': price,'itemurl': str(itemurl),'times': times}
+                tmp_filter = {'group': tmp_data['group'], 'Brand': tmp_data['Brand'],
+                              'cigar_name': tmp_data['cigar_name'], 'itemurl': tmp_data['itemurl']}
+                for i in tmp_del:
+                    del tmp_data[i]
                 collection.update_one(
-                    filter={
-                        'group': group}, update={
+                    filter=tmp_filter, update={
                         "$set": tmp_data}, upsert=True)
                 with writenums.get_lock():
                     writenums.value += 1

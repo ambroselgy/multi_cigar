@@ -8,18 +8,56 @@ import datetime
 
 connect = MongoClient(host='localhost', port=27017)
 db = connect['test']
-collection = db['stock']
-# collection.insert_one({"name":"user1", "age":12, "sex":"male"})
-# collection.insert_one({"name":"user2", "age":13, "sex":"male"})
-# collection.insert_one({"name":"user88", "age":99, "sex":"male"})
+collection = db['test']
+# collection.insert_one({
+#   "Brand" : "Ramón Allones",
+#   "cigar_name" : "Ramón Allones - Small Club Coronas",
+#   "group" : "Ramón Allones - Small Club Coronas 1 piece",
+#   "cigar_price" : "6.30",
+#   "detailed" : "6.30",
+#   "details" : "0",
+#   "itemurl" : "https://selected-cigars.com/en/ramon-allones-small-club-coronas",
+#   "stock" : "available",
+#   "times" : "2020-03-22 14:35"
+# })
+# collection.insert_one({
+#   "Brand" : "other",
+#   "cigar_name" : "Ramón Allones - Small Club Coronas",
+#   "group" : "Ramón Allones - Small Club Coronas 1 piece",
+#   "cigar_price" : "6.30",
+#   "detailed" : "6.30",
+#   "details" : "0",
+#   "itemurl" : "https://selected-cigars.com/en/ramon-allones-small-club-coronas",
+#   "stock" : "available",
+#   "times" : "2020-03-22 14:35"
+# })
+# collection.insert_one({
+#   "Brand" : "cohiba",
+#   "cigar_name" : "Ramón Allones - Small Club Coronas",
+#   "group" : "Ramón Allones - Small Club Coronas 1 piece",
+#   "cigar_price" : "6.30",
+#   "detailed" : "6.30",
+#   "details" : "0",
+#   "itemurl" : "https://selected-cigars.com/en/ramon-allones-small-club-coronas",
+#   "stock" : "available",
+#   "times" : "2020-03-22 14:35"
+# })
 
 
-tmp_data = {'age': 999, 'sex': 'it is ok'}
-tmp_filter = {'$and': [{'name': {'$regex': 'user'}},
-                       {'stock': {'$regex': 'test'}}]}
-collection.find()
-collection.update_many(
-    filter=tmp_filter,
-    update={
-        "$set": tmp_data},
-    upsert=True)
+#cigarinfo = {'Brand': brand,'cigar_name': cigar_name,'group': group,'detailed': detailed,'stock': stock,
+#             'details': details,'cigar_price': price,'itemurl': str(itemurl),'times': times}
+tmp_filter = {'group':'Ramón Allones - Small Club Coronas 1 piece',
+              'Brand':'cohiba',
+              'cigar_name':'Ramón Allones - Small Club Coronas',
+              'itemurl':'https://selected-cigars.com/en/ramon-allones-small-club-coronas'}
+tmp_data = {
+  "cigar_price" : "666",
+  "detailed" : "666",
+  "details" : "0",
+  "stock" : "available",
+  "times" : "2020-03-22 14:35"
+}
+
+collection.update_one(
+    filter=tmp_filter, update={
+        "$set": tmp_data}, upsert=True)
