@@ -288,25 +288,60 @@ class Cigarworld():
                     item_list = soup.select("li.ws-g.DetailVariant")
                     brand = soup.find('h1').string.strip()
                     times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-                    for i in item_list:
-                        cigar_name = i.find(
-                            'div',
-                            attrs={
-                                'class': "ws-u-1 DetailVariant-variantName",
-                            }).find(
-                            text=True).strip()
-                        pricelist = i.select(
-                            'div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span.preis')
-                        numslist = i.find_all(
+                    if item_list:
+                        for i in item_list:
+                            cigar_name = i.find(
+                                'div',
+                                attrs={
+                                    'class': "ws-u-1 DetailVariant-variantName",
+                                }).find(
+                                text=True).strip()
+                            pricelist = i.select(
+                                'div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span.preis')
+                            numslist = i.find_all(
+                                'span', attrs={
+                                    'class': re.compile(r'einheitlabel')})
+                            tmp_itemurl = i.find(
+                                'a', attrs={
+                                    'class': 'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
+                            itemurl = 'https://www.cigarworld.de' + tmp_itemurl
+                            if len(pricelist) == len(numslist):
+                                for i in range(len(pricelist)):
+                                    tmp_name = brand + " " + str(cigar_name)
+                                    price = pricelist[i].text.replace("€", "").strip()
+                                    tmp_nums = numslist[i].text
+                                    tmp_stock = numslist[i].get('title').strip()
+                                    if tmp_stock:
+                                        stock = tmp_stock
+                                    else:
+                                        stock = "in stock"
+                                    # nums = re.sub(r'\D',"",tmp_nums)
+                                    nums = tmp_nums
+                                    group = tmp_name + '  ' + str(nums)
+                                    details = '0'
+                                    detailed = price
+                                    cigarinfo = {
+                                        'Brand': brand,
+                                        'cigar_name': tmp_name,
+                                        'group': group,
+                                        'detailed': detailed,
+                                        'stock': stock,
+                                        'details': details,
+                                        'cigar_price': price,
+                                        'itemurl': itemurl,
+                                        'times': times}
+                                    item_info_queue.put(cigarinfo)
+                            else:
+                                print("比对不通过 " + tmp_links)
+                    else:
+                        cigar_name = brand
+                        numslist = soup.find_all(
                             'span', attrs={
                                 'class': re.compile(r'einheitlabel')})
-                        tmp_itemurl = i.find(
-                            'a', attrs={
-                                'class': 'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
-                        itemurl = 'https://www.cigarworld.de' + tmp_itemurl
-                        if len(pricelist) == len(numslist):
+                        pricelist = soup.find_all('span', class_='preis')
+                        if len(numslist) == len(pricelist):
                             for i in range(len(pricelist)):
-                                tmp_name = brand + " " + str(cigar_name)
+                                tmp_name = brand
                                 price = pricelist[i].text.replace("€", "").strip()
                                 tmp_nums = numslist[i].text
                                 tmp_stock = numslist[i].get('title').strip()
@@ -314,11 +349,11 @@ class Cigarworld():
                                     stock = tmp_stock
                                 else:
                                     stock = "in stock"
-                                # nums = re.sub(r'\D',"",tmp_nums)
                                 nums = tmp_nums
                                 group = tmp_name + '  ' + str(nums)
                                 details = '0'
                                 detailed = price
+                                itemurl = tmp_links
                                 cigarinfo = {
                                     'Brand': brand,
                                     'cigar_name': tmp_name,
@@ -330,8 +365,7 @@ class Cigarworld():
                                     'itemurl': itemurl,
                                     'times': times}
                                 item_info_queue.put(cigarinfo)
-                        else:
-                            print("比对不通过 " + tmp_links)
+
                 except Exception as err:
                     print(str(tmp_links) + "    商品获取报错")
                     print(err)
