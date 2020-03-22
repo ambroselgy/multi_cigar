@@ -5,6 +5,7 @@ import time
 from multiprocessing import Pool, Manager, Value
 from pymongo import MongoClient
 import datetime
+import csv
 
 
 def sleeptime(hour, min, sec):
@@ -146,17 +147,57 @@ def save_to_mongodb(item_info_queue):
             try:
                 tmp_data = cigarinfo
                 group = cigarinfo["group"]
-                del tmp_data['group']
+                tmp_del = ['group', 'Brand', 'cigar_name', 'itemurl']
+                tmp_filter = {'group': tmp_data['group'], 'Brand': tmp_data['Brand'],
+                              'cigar_name': tmp_data['cigar_name'], 'itemurl': tmp_data['itemurl']}
+                for i in tmp_del:
+                    del tmp_data[i]
                 collection.update_one(
-                    filter={
-                        'group': group}, update={
+                    filter=tmp_filter, update={
                         "$set": tmp_data}, upsert=True)
                 with writenums.get_lock():
                     writenums.value += 1
             except Exception as err:
                 print(tmp_cigar + "    存储报错")
                 print(err)
-
+def save_to_csv(item_info_queue, filename):
+    global writenums
+    while True:
+        while item_info_queue.empty():
+            time.sleep(0.02)
+        cigar = item_info_queue.get()
+        if cigar == "#END#":  # 遇到退出标志，退出进程
+            print("数据存储完成")
+            break
+        else:
+            filename = filename
+            with open(filename, "a", encoding='utf-8-sig', newline='') as csvfile:
+                headers = [
+                    'Brand',
+                    'cigar_name',
+                    'group',
+                    'detailed',
+                    'stock',
+                    'details',
+                    'cigar_price',
+                    'itemurl',
+                    'times']
+                csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
+                rowwriter = csv.writer(csvfile)
+                with open(filename, 'r', encoding='utf-8-sig') as rowfile:
+                    rowreader = csv.reader(rowfile)
+                    if not [row for row in rowreader]:
+                        rowwriter.writerow(
+                            ['品牌', '型号','雪茄', '税前价格', '库存', '折扣', '原价', '链接', '更新时间'])
+                        csvwriter.writerow(cigar)
+                        csvfile.close()
+                        with writenums.get_lock():
+                            writenums.value += 1
+                    else:
+                        csvwriter.writerow(cigar)
+                        csvfile.close()
+                        with writenums.get_lock():
+                            writenums.value += 1
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
@@ -203,7 +244,52 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     save_to_mongodb_pool.close()
     save_to_mongodb_pool.join()
     print("已写入  " + str(writenums) + "  条数据")
+def start_work_csv(links, maxurl, maxinfo, maxsave):
+    '''组织抓取过程'''
+    filename = "./data/multe_" + str(runtime) + ".csv"
+    writenums = Value('i', 0)
+    get_item_url_nums = maxurl
+    get_item_url_pool = Pool(processes=get_item_url_nums)
+    get_item_info_nums = maxinfo
+    get_item_info_pool = Pool(processes=get_item_info_nums)
+    save_to_mongodb_nums = maxsave
+    save_to_mongodb_pool = Pool(
+        processes=save_to_mongodb_nums,
+        initializer=init,
+        initargs=(
+            writenums,
+        ))
+    page_links_queue = Manager().Queue()
+    item_url_queue = Manager().Queue()
+    item_info_queue = Manager().Queue()
+    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
 
+    make_page_links(links, page_links_queue)  # 调用函数构造list
+    for index in range(0, get_item_url_nums):  # 获取item list
+        get_item_url_pool.apply_async(
+            func=get_item_url, args=(
+                page_links_queue, item_url_queue, header,))
+    for index in range(0, get_item_info_nums):
+        get_item_info_pool.apply_async(
+            func=get_item_info, args=(
+                item_url_queue, item_info_queue, header,))
+    for index in range(0, save_to_mongodb_nums):
+        save_to_mongodb_pool.apply_async(
+            func=save_to_csv, args=(
+                item_info_queue,filename,))
+
+    get_item_url_pool.close()
+    get_item_url_pool.join()
+
+    for i in range(0, get_item_info_nums):
+        item_url_queue.put("#END#")
+    get_item_info_pool.close()
+    get_item_info_pool.join()
+    for i in range(0, save_to_mongodb_nums):
+        item_info_queue.put("#END#")
+    save_to_mongodb_pool.close()
+    save_to_mongodb_pool.join()
+    print("已写入  " + str(writenums) + "  条数据")
 
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
