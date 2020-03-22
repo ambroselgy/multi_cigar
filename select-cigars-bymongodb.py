@@ -166,8 +166,6 @@ def save_to_mongodb(item_info_queue):
                 tmp_data = cigarinfo
                 group = cigarinfo["group"]
                 tmp_del = ['group', 'Brand', 'cigar_name', 'itemurl']
-#cigarinfo = {'Brand': brand,'cigar_name': cigar_name,'group': group,'detailed': detailed,'stock': stock,
-#             'details': details,'cigar_price': price,'itemurl': str(itemurl),'times': times}
                 tmp_filter = {'group': tmp_data['group'], 'Brand': tmp_data['Brand'],
                               'cigar_name': tmp_data['cigar_name'], 'itemurl': tmp_data['itemurl']}
                 for i in tmp_del:
