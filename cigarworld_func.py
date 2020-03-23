@@ -68,7 +68,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
             break
         else:
             print("开始获取 " + str(tmp_items) + "  数据")
-            r = requests.get(tmp_links, headers=header)
+            r = requests.get(tmp_items, headers=header)
             while r.status_code != 200:
                 time.sleep(10)
                 print(r.status_code)
