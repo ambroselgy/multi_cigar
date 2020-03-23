@@ -242,7 +242,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
-    header = {'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
+    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
     make_page_links(links, page_links_queue)  # 调用函数构造list
     for index in range(0, get_item_url_nums):  # 获取item list

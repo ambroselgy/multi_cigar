@@ -3,7 +3,7 @@ from multiprocessing import Pool, Manager, Value
 import re
 
 
-def selectcigars_get_item_url(soup):
+def selectcigars_get_item_url(tmp_links, soup):
     item_url_list = []
     product = soup.find_all(
         'li', class_="item product product-item")
@@ -15,13 +15,18 @@ def selectcigars_get_item_url(soup):
     return item_url_list
 
 
-def cigarworld_get_item_url(soup):
+def cigarworld_get_item_url(tmp_links, soup):
     item_url_list = []
-    product = soup.find_all(
-        'a', attrs={'search-result-item-inner'})
-    for i in product:
-        tmp_url = i.get('href')
-        url = 'https://www.cigarworld.de' + tmp_url
+    item_list = soup.select("li.ws-g.DetailVariant")
+    if item_list:
+        for i in item_list:
+            tmp_itemurl = i.find(
+                'a', attrs={
+                    'class': 'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
+            url = 'https://www.cigarworld.de' + tmp_itemurl
+            item_url_list.append(url)
+    else:
+        url = tmp_links
         item_url_list.append(url)
     return item_url_list
 
@@ -99,83 +104,70 @@ def selectcigars_get_item_info(tmp_items, soup, item_info_queue,times):
 
 def cigarworld_get_item_info(tmp_items, soup, item_info_queue,times):
     item_info_list = []
-    item_list = soup.select("li.ws-g.DetailVariant")
-    brand = soup.find('h1').string.strip()
-    if item_list:
-        for i in item_list:
-            cigar_name = i.find(
-                'div',
-                attrs={
-                    'class': "ws-u-1 DetailVariant-variantName",
-                }).find(
-                text=True).strip()
-            pricelist = i.select(
-                'div.ws-u-1-3.ws-u-lg-1-4.DetailVariant-formPrice > span.preis')
-            numslist = i.find_all(
-                'span', attrs={
-                    'class': re.compile(r'einheitlabel')})
-            tmp_itemurl = i.find(
-                'a', attrs={
-                    'class': 'ws-u-1 ws-u-lg-4-24 DetailVariant-col DetailVariant-image'})['href']
-            itemurl = 'https://www.cigarworld.de' + tmp_itemurl
-            if len(pricelist) == len(numslist):
-                for i in range(len(pricelist)):
-                    tmp_name = brand + " " + str(cigar_name)
-                    price = pricelist[i].text.replace("€", "").strip()
-                    tmp_nums = numslist[i].text
-                    tmp_stock = numslist[i].get('title').strip()
-                    if tmp_stock:
-                        stock = tmp_stock
-                    else:
-                        stock = "in stock"
-                    # nums = re.sub(r'\D',"",tmp_nums)
-                    nums = tmp_nums
-                    group = tmp_name + '  ' + str(nums)
-                    details = '0'
-                    detailed = price
-                    cigarinfo = {
-                        'Brand': brand,
-                        'cigar_name': tmp_name,
-                        'group': group,
-                        'detailed': detailed,
-                        'stock': stock,
-                        'details': details,
-                        'cigar_price': price,
-                        'itemurl': itemurl,
-                        'times': times}
-                    item_info_list.append(cigarinfo)
+    tmp_list = soup.select('div.ws-g.VariantInfo div.ws-g.ws-c')
+    if tmp_list:
+        for i in tmp_list:
+            tmp_brand = i.find('div', class_='ws-u-1 VariantInfo-itemName').text
+            if 'Brand' in tmp_brand:
+                brand = i.find('div', class_='ws-u-1 VariantInfo-itemValue').text
+            elif 'Item' in tmp_brand:
+                cigar_name = i.find('div', class_='ws-u-1 VariantInfo-itemValue').text
+        itemlist = soup.find_all('div', class_='ws-g DetailOrderbox-row')
+        for i in itemlist:
+            tmp_price = i.find('span', class_='preis').contents
+            if len(tmp_price) > 1:
+                detailed = tmp_price[0].replace("€", "").strip()
+                cigar_price = tmp_price[1].text.strip()
             else:
-                print("比对不通过 " + tmp_items)
+                detailed = tmp_price[0].replace("€", "").strip()
+                cigar_price = detailed
+            nums = i.find('span', attrs={'class': re.compile(r'einheitlabel')}).text.strip()
+            stock = i.find('label', attrs={'for': re.compile(r'wk_anzahl')}).get('title').strip()
+            tmp_details = i.find('small', attrs={'style': re.compile('color')})
+            if tmp_details:
+                details = re.sub(r'\*', '', tmp_details.text.strip())
+            else:
+                details = 0
+            cigarinfo = {
+                'Brand': brand,
+                'cigar_name': brand + ' ' + cigar_name,
+                'group': brand + ' ' + cigar_name + ' ' + nums,
+                'detailed': detailed,
+                'stock': stock,
+                'details': details,
+                'cigar_price': cigar_price,
+                'itemurl': tmp_items,
+                'times': times}
+            item_info_list.append(cigarinfo)
     else:
-        cigar_name = brand
-        numslist = soup.find_all(
-            'span', attrs={
-                'class': re.compile(r'einheitlabel')})
-        pricelist = soup.find_all('span', class_='preis')
-        if len(numslist) == len(pricelist):
-            for i in range(len(pricelist)):
-                tmp_name = brand
-                price = pricelist[i].text.replace("€", "").strip()
-                tmp_nums = numslist[i].text
-                tmp_stock = numslist[i].get('title').strip()
-                if tmp_stock:
-                    stock = tmp_stock
-                else:
-                    stock = "in stock"
-                nums = tmp_nums
-                group = tmp_name + '  ' + str(nums)
-                details = '0'
-                detailed = price
-                itemurl = tmp_items
-                cigarinfo = {
-                    'Brand': brand,
-                    'cigar_name': tmp_name,
-                    'group': group,
-                    'detailed': detailed,
-                    'stock': stock,
-                    'details': details,
-                    'cigar_price': price,
-                    'itemurl': itemurl,
-                    'times': times}
-                item_info_list.append(cigarinfo)
+        brand = 'other'
+        cigar_name = soup.find('h1').string.strip()
+        itemlist = soup.find_all('div', class_='ws-g DetailOrderbox-row')
+        for i in itemlist:
+            tmp_price = i.find('span', class_='preis').contents
+            if len(tmp_price) > 1:
+                detailed = tmp_price[0].replace("€", "").strip()
+                cigar_price = tmp_price[1].text.strip()
+            else:
+                detailed = tmp_price[0].replace("€", "").strip()
+                cigar_price = detailed
+            nums = i.find('span', attrs={'class': re.compile(r'einheitlabel')}).text.strip()
+            stock = i.find('label', attrs={'for': re.compile(r'wk_anzahl')}).get('title').strip()
+            tmp_details = i.find('small', attrs={'style': re.compile('color')})
+            if tmp_details:
+                details = re.sub(r'\*', '', tmp_details.text.strip())
+            else:
+                details = 0
+            cigarinfo = {
+                'Brand': brand,
+                'cigar_name': brand + ' ' + cigar_name,
+                'group': brand + ' ' + cigar_name + ' ' + nums,
+                'detailed': detailed,
+                'stock': stock,
+                'details': details,
+                'cigar_price': cigar_price,
+                'itemurl': tmp_items,
+                'times': times}
+            item_info_list.append(cigarinfo)
+
     return item_info_list

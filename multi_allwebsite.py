@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import datetime
 import csv
 import allsite_fuc as site
+import traceback
 
 def sleeptime(hour, min, sec):
     return hour * 3600 + min * 60 + sec
@@ -42,19 +43,20 @@ def get_item_url(page_links_queue, item_url_queue, header):
             html = r.text
             soup = BeautifulSoup(html, "html.parser")
             try:
-                if 'select' in tmp_links:
-                    item_url_list = site.selectcigars_get_item_url(soup)
+                if 'selected-cigars.com' in tmp_links:
+                    item_url_list = site.selectcigars_get_item_url(tmp_links, soup)
                     for i in item_url_list:
                         item_url_queue.put(i)
-                elif 'cigarworld' in tmp_links:
-                    item_url_list = site.cigarworld_get_item_url(soup)
+                elif 'cigarworld.de' in tmp_links:
+                    item_url_list = site.cigarworld_get_item_url(tmp_links, soup)
                     for i in item_url_list:
                         item_url_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
                 print(str(tmp_links) + "    列表页解析报错")
-                print(err)
+                print(err.args)
+                print(traceback.format_exc())
 
 
 def get_item_info(item_url_queue, item_info_queue, header):
@@ -72,6 +74,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
         else:
             print("开始获取 " + str(tmp_items) + "  数据")
             r = requests.get(tmp_items, headers=header)
+            times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             while r.status_code != 200:
                 time.sleep(10)
                 print(r.status_code)
@@ -80,21 +83,21 @@ def get_item_info(item_url_queue, item_info_queue, header):
             r.encoding = 'utf-8'
             html = r.text
             soup = BeautifulSoup(html, "lxml")
-            times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             try:
-                if 'select' in tmp_items:
-                    item_info_list = site.selectcigars_get_item_info(tmp_items, soup, item_info_queue,times)
+                if 'selected-cigars.com' in tmp_items:
+                    item_info_list = site.selectcigars_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
                         item_info_queue.put(i)
-                elif 'cigarworld' in tmp_items:
-                    item_info_list = site.cigarworld_get_item_info(tmp_items, soup, item_info_queue,times)
+                elif 'cigarworld.de' in tmp_items:
+                    item_info_list = site.cigarworld_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
                         item_info_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
                 print(str(tmp_items) + "    商品获取报错")
-                print(err)
+                print(err.args)
+                print(traceback.format_exc())
 
 
 def save_to_mongodb(item_info_queue):
@@ -126,7 +129,8 @@ def save_to_mongodb(item_info_queue):
                     writenums.value += 1
             except Exception as err:
                 print(group + "    存储报错")
-                print(err)
+                print(err.args)
+                print(traceback.format_exc())
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
@@ -145,7 +149,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     page_links_queue = Manager().Queue()
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
-    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
+    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
     make_page_links(links, page_links_queue)  # 调用函数构造list
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
@@ -174,12 +178,15 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
 
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
-    links = ['https://www.cigarworld.de/en/zigarren/cuba?von=0',
-             'https://www.cigarworld.de/en/zigarren/cuba?von=30',
-             'https://www.cigarworld.de/en/zigarren/cuba?von=60']  #构造cigarworld links
+    links = []
 
-    for index in range(1, 14 + 1):
-        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))    #构造select-cigars links
+    # for index in range(1, 14 + 1):
+    #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))    #构造select-cigars links
+    with open("cigarworld.txt", 'r') as f:
+        tmp_links = f.readlines()
+    for i in tmp_links:
+        links.append(i.strip())
+
     maxurl = 3  # 解析列表页，获取商品链接的进程
     maxinfo = 5  # 获取商品信息的进程
     maxsave = 1  # 存储进程
