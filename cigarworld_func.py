@@ -77,10 +77,10 @@ def get_item_info(item_url_queue, item_info_queue, header):
             r.encoding = 'utf-8'
             html = r.text
             soup = BeautifulSoup(html, "lxml")
+            times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
             try:
                 item_list = soup.select("li.ws-g.DetailVariant")
                 brand = soup.find('h1').string.strip()
-                times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 if item_list:
                     for i in item_list:
                         cigar_name = i.find(
