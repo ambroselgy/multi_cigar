@@ -61,19 +61,19 @@ def get_item_info(item_url_queue, item_info_queue, header):
         while item_url_queue.empty():
             time.sleep(0.01)
 
-        tmp_links = item_url_queue.get()
-        if tmp_links == "#END#":  # 遇到结束标志，推出进程
+        tmp_items = item_url_queue.get()
+        if tmp_items == "#END#":  # 遇到结束标志，推出进程
             print("get_item_info Quit {}".format(item_url_queue.qsize()))
             print("队列剩余" + str(item_info_queue.qsize()))
             break
         else:
-            print("开始获取 " + str(tmp_links) + "  数据")
+            print("开始获取 " + str(tmp_items) + "  数据")
             r = requests.get(tmp_links, headers=header)
             while r.status_code != 200:
                 time.sleep(10)
                 print(r.status_code)
-                print("重新获取  " + str(tmp_links) + "   数据")
-                r = requests.get(tmp_links, headers=header)
+                print("重新获取  " + str(tmp_items) + "   数据")
+                r = requests.get(tmp_items, headers=header)
             r.encoding = 'utf-8'
             html = r.text
             soup = BeautifulSoup(html, "lxml")
@@ -125,7 +125,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
                                     'times': times}
                                 item_info_queue.put(cigarinfo)
                         else:
-                            print("比对不通过 " + tmp_links)
+                            print("比对不通过 " + tmp_items)
                 else:
                     cigar_name = brand
                     numslist = soup.find_all(
@@ -146,7 +146,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
                             group = tmp_name + '  ' + str(nums)
                             details = '0'
                             detailed = price
-                            itemurl = tmp_links
+                            itemurl = tmp_items
                             cigarinfo = {
                                 'Brand': brand,
                                 'cigar_name': tmp_name,
@@ -160,7 +160,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
                             item_info_queue.put(cigarinfo)
 
             except Exception as err:
-                print(str(tmp_links) + "    商品获取报错")
+                print(str(tmp_items) + "    商品获取报错")
                 print(err)
 
 
@@ -192,8 +192,9 @@ def save_to_mongodb(item_info_queue):
                 with writenums.get_lock():
                     writenums.value += 1
             except Exception as err:
-                print(tmp_cigar + "    存储报错")
+                print(group + "    存储报错")
                 print(err)
+
 def save_to_csv(item_info_queue, filename):
     global writenums
     while True:
