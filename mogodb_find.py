@@ -7,6 +7,8 @@
 
 #{"$and": [{"cigar_name": {"$regex":"Cohiba"}}, {"stock": {"$regex": "available"}}]}
 #{"stock":{$not: {"$regex":"sold",'$options':'i'}}}
-#{"cigar_name":{"$regex":"cohiba",'$options':'i'}}
+#{"cigar_name":{"$regex":"bolivar",'$options':'i'}}
+#{"cigar_name":{"$regex":"Bolívar",'$options':'i'}}
 #{$and:[{"cigar_name":{"$regex":"cohiba",'$options':'i'}},{"stock":{$not:{"$regex":"sold",'$options':'i'}}}]}
-#{$and:[{"cigar_name":{"$regex":"Cohiba",'$options':'i'}},{"stock":{$not:{"$regex":"sold",'$options':'i'}}}]}
+#{$or:[{"cigar_name":{"$regex":"bolivar",'$options':'i'}},{"cigar_name":{"$regex":"Bolívar",'$options':'i'}}]}
+#{$and:[{$or:[{"cigar_name":{"$regex":"bolivar",'$options':'i'}},{"cigar_name":{"$regex":"Bolívar",'$options':'i'}}]},{"group":{"$regex":"petit",'$options':'i'}}]}
