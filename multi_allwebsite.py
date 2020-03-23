@@ -180,8 +180,8 @@ second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
     links = []
 
-    # for index in range(1, 14 + 1):
-    #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))    #构造select-cigars links
+    for index in range(1, 14 + 1):
+        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))    #构造select-cigars links
     with open("cigarworld.txt", 'r') as f:
         tmp_links = f.readlines()
     for i in tmp_links:
