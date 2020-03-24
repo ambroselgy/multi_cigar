@@ -176,8 +176,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     save_to_mongodb_pool.join()
     print("已写入  " + str(writenums.value) + "  条数据")
 
-second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
-if __name__ == '__main__':
+def make_website_links():
     links = []
 
     for index in range(1, 14 + 1):
@@ -186,7 +185,10 @@ if __name__ == '__main__':
         tmp_links = f.readlines()
     for i in tmp_links:
         links.append(i.strip())
-
+    return links
+second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
+if __name__ == '__main__':
+    links = make_website_links()
     maxurl = 3  # 解析列表页，获取商品链接的进程
     maxinfo = 5  # 获取商品信息的进程
     maxsave = 1  # 存储进程
