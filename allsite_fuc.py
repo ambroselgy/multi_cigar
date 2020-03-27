@@ -30,6 +30,15 @@ def cigarworld_get_item_url(tmp_links, soup):
         item_url_list.append(url)
     return item_url_list
 
+def alpscigar_get_item_url(tmp_links, soup):
+    item_url_list = []
+    item_list = soup.select("p.name.product-title")
+    for i in item_list:
+        url = i.find('a')['href']
+        item_url_list.append(url+"?wmc-currency=EUR")
+
+    return item_url_list
+
 def selectcigars_get_item_info(tmp_items, soup, item_info_queue,times):
     item_info_list = []
     cigar_name = soup.find('span', class_='base', attrs={'data-ui-id': 'page-title-wrapper'}).text.strip()
@@ -171,3 +180,41 @@ def cigarworld_get_item_info(tmp_items, soup, item_info_queue,times):
             item_info_list.append(cigarinfo)
 
     return item_info_list
+
+def alpscigar_get_item_info(tmp_items, soup, item_info_queue,times):
+    item_info_list = []
+    tmp_brand = soup.find('tr',class_='woocommerce-product-attributes-item woocommerce-product-attributes-item--attribute_pa_brand')
+    if tmp_brand:
+        brand = tmp_brand.find('td', class_='woocommerce-product-attributes-item__value').get_text().strip()
+    else:
+        brand = 'other'
+    group = soup.find('h1',class_='product-title product_title entry-title').get_text()
+    cigar_name = re.sub(r'\((\d+)\)$', '', group)
+    tmp_pricelist = soup.select('div.product-info.summary.entry-summary.col.col-fit.product-summary.text-left.form-flat')
+    tmp_detailed = tmp_pricelist[0].find('del')
+    if tmp_detailed:
+        cigar_price = tmp_detailed.find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+        detailed = tmp_pricelist[0].find('ins').find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+    else:
+        cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+        detailed = cigar_price
+    tmp_stock = tmp_pricelist[0].find('p', attrs={'class': re.compile(r'^stock')})
+    if tmp_stock:
+        stock = tmp_stock.get_text()
+    else:
+        stock = 'in stock'
+    details = '0'
+    cigarinfo = {
+        'Brand': brand,
+        'cigar_name': cigar_name,
+        'group': group,
+        'detailed': detailed,
+        'stock': stock,
+        'details': details,
+        'cigar_price': cigar_price,
+        'itemurl': tmp_items,
+        'times': times}
+    item_info_list.append(cigarinfo)
+
+    return item_info_list
+

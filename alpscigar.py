@@ -109,7 +109,7 @@ def get_item_info(item_url_queue, item_info_queue, header):
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
-    db = connect['allsite']
+    db = connect['alpscigar']
     collection = db['stock']
     global writenums
 
@@ -187,14 +187,8 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
 def make_website_links():
     links = []
 
-    for index in range(1, 14 + 1):
-        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
     for index in range(1, 16 + 1):
-        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
-    with open("cigarworld.txt", 'r') as f:
-        tmp_links = f.readlines()
-    for i in tmp_links:
-        links.append(i.strip())
+        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR")  # 构造select-cigars links
     return links
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
@@ -206,3 +200,124 @@ if __name__ == '__main__':
     st = time.time()
     start_work_mongodb(links, maxurl, maxinfo, maxsave)
     print(time.time() - st)
+
+
+
+'''from bs4 import BeautifulSoup
+import requests
+import re
+import time
+from pymongo import MongoClient
+import datetime
+def run():
+
+    tmp_items = 'https://alpscigar.com/shop/cuban-cigars/cohiba-robusto-reserva-cosecha-2014-20/'
+    header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
+    r = requests.get(tmp_items, headers=header)
+    times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    while r.status_code != 200:
+        time.sleep(10)
+        print(r.status_code)
+        print("重新获取  " + str(tmp_items) + "   数据")
+        r = requests.get(tmp_items, headers=header)
+    r.encoding = 'utf-8'
+    html = r.text
+    soup = BeautifulSoup(html, "lxml")
+    tmp_brand = soup.find('tr',class_='woocommerce-product-attributes-item woocommerce-product-attributes-item--attribute_pa_brand')
+    if tmp_brand:
+        brand = tmp_brand.find('td', class_='woocommerce-product-attributes-item__value').get_text().strip()
+    else:
+        brand = 'other'
+    group = soup.find('h1',class_='product-title product_title entry-title').get_text()
+    cigar_name = re.sub(r'\((\d+)\)$', '', group)
+    tmp_pricelist = soup.select('div.product-info.summary.entry-summary.col.col-fit.product-summary.text-left.form-flat')
+    tmp_detailed = tmp_pricelist[0].find('del')
+    if tmp_detailed:
+        cigar_price = tmp_detailed.find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+        detailed = tmp_pricelist[0].find('ins').find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+    else:
+        cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+        detailed = cigar_price
+    tmp_stock = tmp_pricelist[0].find('p', attrs={'class': re.compile(r'^stock')})
+    if tmp_stock:
+        stock = tmp_stock.get_text()
+    else:
+        stock = 'in stock'
+    print(brand)
+    print(cigar_name)
+    print(group)
+    print(cigar_price)
+    print(detailed)
+    print(stock)
+
+
+
+    # item_info_list = []
+    # tmp_list = soup.select('div.ws-g.VariantInfo div.ws-g.ws-c')
+    # if tmp_list:
+    #     for i in tmp_list:
+    #         tmp_brand = i.find('div', class_='ws-u-1 VariantInfo-itemName').text
+    #         if 'Brand' in tmp_brand:
+    #             brand = i.find('div', class_='ws-u-1 VariantInfo-itemValue').text
+    #         elif 'Item' in tmp_brand:
+    #             cigar_name = i.find('div', class_='ws-u-1 VariantInfo-itemValue').text
+    #     itemlist = soup.find_all('div', class_='ws-g DetailOrderbox-row')
+    #     for i in itemlist:
+    #         tmp_price = i.find('span', class_='preis').contents
+    #         if len(tmp_price) > 1:
+    #             detailed = tmp_price[0].replace("€", "").strip()
+    #             cigar_price = tmp_price[1].text.strip()
+    #         else:
+    #             detailed = tmp_price[0].replace("€", "").strip()
+    #             cigar_price = detailed
+    #         nums = i.find('span', attrs={'class': re.compile(r'einheitlabel')}).text.strip()
+    #         stock = i.find('label', attrs={'for': re.compile(r'wk_anzahl')}).get('title').strip()
+    #         tmp_details = i.find('small', attrs={'style': re.compile('color')})
+    #         if tmp_details:
+    #             details = re.sub(r'\*', '', tmp_details.text.strip())
+    #         else:
+    #             details = 0
+    #         cigarinfo = {
+    #             'Brand': brand,
+    #             'cigar_name': brand + ' ' + cigar_name,
+    #             'group': brand + ' ' + cigar_name + ' ' + nums,
+    #             'detailed': detailed,
+    #             'stock': stock,
+    #             'details': details,
+    #             'cigar_price': cigar_price,
+    #             'itemurl': tmp_items,
+    #             'times': times}
+    #         item_info_list.append(cigarinfo)
+    # else:
+    #     brand = 'other'
+    #     cigar_name = soup.find('h1').string.strip()
+    #     itemlist = soup.find_all('div', class_='ws-g DetailOrderbox-row')
+    #     for i in itemlist:
+    #         tmp_price = i.find('span', class_='preis').contents
+    #         if len(tmp_price) > 1:
+    #             detailed = tmp_price[0].replace("€", "").strip()
+    #             cigar_price = tmp_price[1].text.strip()
+    #         else:
+    #             detailed = tmp_price[0].replace("€", "").strip()
+    #             cigar_price = detailed
+    #         nums = i.find('span', attrs={'class': re.compile(r'einheitlabel')}).text.strip()
+    #         stock = i.find('label', attrs={'for': re.compile(r'wk_anzahl')}).get('title').strip()
+    #         tmp_details = i.find('small', attrs={'style': re.compile('color')})
+    #         if tmp_details:
+    #             details = re.sub(r'\*', '', tmp_details.text.strip())
+    #         else:
+    #             details = 0
+    #         cigarinfo = {
+    #             'Brand': brand,
+    #             'cigar_name': brand + ' ' + cigar_name,
+    #             'group': brand + ' ' + cigar_name + ' ' + nums,
+    #             'detailed': detailed,
+    #             'stock': stock,
+    #             'details': details,
+    #             'cigar_price': cigar_price,
+    #             'itemurl': tmp_items,
+    #             'times': times}
+    #         item_info_list.append(cigarinfo)
+
+run()
+'''
