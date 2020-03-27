@@ -7,6 +7,7 @@ import datetime
 import csv
 import allsite_fuc as site
 import traceback
+import random
 
 
 def sleeptime(hour, min, sec):
@@ -17,6 +18,18 @@ def init(args):
     global writenums
     writenums = args
 
+def proxy():
+    proxyHost = "58.218.200.229"
+    proxyPort = "2662"
+    proxyMeta = "https://%(host)s:%(port)s" % {
+
+        "host": proxyHost,
+        "port": proxyPort,
+    }
+
+    proxies = {
+        "https": proxyMeta,
+    }
 
 def make_page_links(page_links, page_links_queue):
     for index in page_links:
@@ -25,7 +38,7 @@ def make_page_links(page_links, page_links_queue):
     page_links_queue.put("#END#")
 
 
-def get_item_url(page_links_queue, item_url_queue, header):
+def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
     while True:
         tmp_links = page_links_queue.get()
         print("开始解析 " + str(tmp_links) + "  数据")
@@ -63,7 +76,7 @@ def get_item_url(page_links_queue, item_url_queue, header):
                 print(traceback.format_exc())
 
 
-def get_item_info(item_url_queue, item_info_queue, header):
+def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
     while True:
 
         while item_url_queue.empty():
@@ -158,15 +171,17 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     item_info_queue = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36'
                             ' (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
+    api = 'http://http.tiqu.alicdns.com/getip3?num=18&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
     make_page_links(links, page_links_queue)  # 调用函数构造list
+    proxy_list = make_proxy_list(api)
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
             func=get_item_url, args=(
-                page_links_queue, item_url_queue, header,))
+                page_links_queue, item_url_queue, header, proxy_list,))
     for index in range(0, get_item_info_nums):
         get_item_info_pool.apply_async(
             func=get_item_info, args=(
-                item_url_queue, item_info_queue, header,))
+                item_url_queue, item_info_queue, header, proxy_list,))
     for index in range(0, save_to_mongodb_nums):
         save_to_mongodb_pool.apply_async(
             func=save_to_mongodb, args=(
@@ -184,13 +199,34 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     save_to_mongodb_pool.join()
     print("已写入  " + str(writenums.value) + "  条数据")
 
+def make_proxy_list(api):
+    r = requests.get(api)
+    r.encoding = 'utf-8'
+    html = r.json()
+    proxylist = html['data']
+    proxies_list = []
+    for i in proxylist:
+        proxyHost = str(i['ip'])
+        proxyPort = str(i['port'])
+        proxyMeta = "https://%(host)s:%(port)s" % {
+
+            "host": proxyHost,
+            "port": proxyPort,
+        }
+
+        proxies = {
+            "https": proxyMeta,
+        }
+        proxies_list.append(proxies)
+    return proxies_list
+
 def make_website_links():
     links = []
 
-    for index in range(1, 14 + 1):
-        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
-    for index in range(1, 16 + 1):
-        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
+    # for index in range(1, 14 + 1):
+    #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
+    # for index in range(1, 16 + 1):
+    #     links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
     with open("cigarworld.txt", 'r') as f:
         tmp_links = f.readlines()
     for i in tmp_links:
