@@ -18,19 +18,6 @@ def init(args):
     global writenums
     writenums = args
 
-def proxy():
-    proxyHost = "58.218.200.229"
-    proxyPort = "2662"
-    proxyMeta = "https://%(host)s:%(port)s" % {
-
-        "host": proxyHost,
-        "port": proxyPort,
-    }
-
-    proxies = {
-        "https": proxyMeta,
-    }
-
 def make_page_links(page_links, page_links_queue):
     for index in page_links:
         print(index + "   放入链接池")
@@ -51,7 +38,7 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
             while r.status_code != 200:
                 time.sleep(10)
                 print("重新解析  " + str(tmp_links) + "   数据")
-                r = requests.get(tmp_links, headers=header)
+                r = requests.get(tmp_links, headers=header, proxies= random.choice(proxy_list))
             r.encoding = 'utf-8'
             html = r.text
             soup = BeautifulSoup(html, "html.parser")
@@ -95,7 +82,7 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                 time.sleep(10)
                 print(r.status_code)
                 print("重新获取  " + str(tmp_items) + "   数据")
-                r = requests.get(tmp_items, headers=header)
+                r = requests.get(tmp_items, headers=header, proxies= random.choice(proxy_list))
             r.encoding = 'utf-8'
             html = r.text
             soup = BeautifulSoup(html, "lxml")
@@ -174,6 +161,7 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     api = 'http://http.tiqu.alicdns.com/getip3?num=18&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
     make_page_links(links, page_links_queue)  # 调用函数构造list
     proxy_list = make_proxy_list(api)
+    print(proxy_list)
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
             func=get_item_url, args=(
