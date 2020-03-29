@@ -50,3 +50,11 @@ with open("cigarworld.txt", 'r') as f:
 tmp_links = f.readlines()
 links = [i.strip() for i in tmp_links]
 print(l)
+'''
+dc = {'8': {'attributes_values': {'1': 'Box 25 Pcs.'}, 'attributes': [4], 'price': 408.542247, 'specific_price': False, 'ecotax': 0, 'weight': 1, 'quantity': 4, 'reference': 'IN6001', 'unit_impact': '0.000000', 'minimal_quantity': '1', 'date_formatted': '', 'available_date': '', 'id_image': 410, 'list': "'4'"}, '192': {'attributes_values': {'1': 'SLB 25 Pcs.'}, 'attributes': [15], 'price': 408.542247, 'specific_price': False, 'ecotax': 0, 'weight': 1, 'quantity': 4, 'reference': 'IN6005', 'unit_impact': '0.000000', 'minimal_quantity': '1', 'date_formatted': '', 'available_date': '', 'id_image': 410, 'list': "'15'"}}
+for num, info in dc.items():
+    for k, v in info['attributes_values'].items():
+        print(v)
+        print(info['price'])
+
+

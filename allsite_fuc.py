@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager, Value
 import re
+import json
 
 
 def selectcigars_get_item_url(tmp_links, soup):
@@ -36,6 +37,14 @@ def alpscigar_get_item_url(tmp_links, soup):
     for i in item_list:
         url = i.find('a')['href']
         item_url_list.append(url+"?wmc-currency=EUR")
+
+    return item_url_list
+
+def cigarmust_get_item_url(tmp_links, soup):
+    item_url_list = []
+    item_list = soup.select("a.product_img_link")
+    for i in item_list:
+        item_url_list.append(i['href'])
 
     return item_url_list
 
@@ -218,3 +227,36 @@ def alpscigar_get_item_info(tmp_items, soup, item_info_queue,times):
 
     return item_info_list
 
+def cigarmust_get_item_info(tmp_items, soup, item_info_queue,times):
+    item_info_list = []
+    tmp_pricelist = soup.find('script', attrs={'type': 'text/javascript'}).get_text()
+    cigar_name = soup.find('h1').get_text()
+    pattern = re.compile(r"var combinations = (\{.*\})\;")
+    priceinfo = json.loads(pattern.search(tmp_pricelist).group(1))
+    tmp_brand = soup.find('div', attrs={'class':'rte','id':''}).find('strong', text=(re.compile(r'Marca')))
+    if tmp_brand:
+        brand = list(tmp_brand.parent.stripped_strings)[-1]
+    else:
+        brand = 'other'
+    for num, info in priceinfo.items():
+        cigar_price = info['price']
+        details = '0'
+        detailed = cigar_price
+        if info['quantity'] != 0:
+            stock = 'in stock'
+        else:
+            stock = 'sold out'
+        for k, v in info['attributes_values'].items():
+            group = cigar_name + " " + v
+            cigarinfo = {
+                'Brand': brand,
+                'cigar_name': cigar_name,
+                'group': group,
+                'detailed': detailed,
+                'stock': stock,
+                'details': details,
+                'cigar_price': cigar_price,
+                'itemurl': tmp_items,
+                'times': times}
+            item_info_list.append(cigarinfo)
+    return item_info_list

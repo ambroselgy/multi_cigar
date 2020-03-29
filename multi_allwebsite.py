@@ -55,6 +55,10 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
                     item_url_list = site.alpscigar_get_item_url(tmp_links, soup)
                     for i in item_url_list:
                         item_url_queue.put(i)
+                elif 'cigarmust.com' in tmp_links:
+                    item_url_list = site.cigarmust_get_item_url(tmp_links, soup)
+                    for i in item_url_list:
+                        item_url_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
@@ -99,6 +103,10 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                     item_info_list = site.alpscigar_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
                         item_info_queue.put(i)
+                elif 'cigarmust.com' in tmp_items:
+                    item_info_list = site.cigarmust_get_item_info(tmp_items, soup, item_info_queue, times)
+                    for i in item_info_list:
+                        item_info_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
@@ -109,7 +117,7 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
-    db = connect['allsite']
+    db = connect['cigarmust']
     collection = db['stock']
     global writenums
 
@@ -158,10 +166,9 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     item_info_queue = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36'
                             ' (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
-    api = 'http://http.tiqu.alicdns.com/getip3?num=18&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
+    api = 'http://webapi.http.zhimacangku.com/getip?num=10&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
     make_page_links(links, page_links_queue)  # 调用函数构造list
     proxy_list = make_proxy_list(api)
-    print(proxy_list)
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
             func=get_item_url, args=(
@@ -215,16 +222,18 @@ def make_website_links():
     #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
     # for index in range(1, 16 + 1):
     #     links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
-    with open("cigarworld.txt", 'r') as f:
-        tmp_links = f.readlines()
-    for i in tmp_links:
-        links.append(i.strip())
+    for index in range(1, 8+1):
+        links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
+    # with open("cigarworld.txt", 'r') as f:
+    #     tmp_links = f.readlines()
+    # for i in tmp_links:
+    #     links.append(i.strip())
     return links
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
     links = make_website_links()
     maxurl = 3  # 解析列表页，获取商品链接的进程
-    maxinfo = 5  # 获取商品信息的进程
+    maxinfo = 15  # 获取商品信息的进程
     maxsave = 1  # 存储进程
     runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
     st = time.time()
