@@ -233,7 +233,7 @@ def cigarmust_get_item_info(tmp_items, soup, item_info_queue,times):
     cigar_name = soup.find('h1').get_text()
     pattern = re.compile(r"var combinations = (\{.*\})\;")
     priceinfo = json.loads(pattern.search(tmp_pricelist).group(1))
-    tmp_brand = soup.find('div', attrs={'class':'rte','id':''}).find('strong', text=(re.compile(r'Marca')))
+    tmp_brand = soup.find_all('span',attrs={'itemprop':'title'})[-1]
     if tmp_brand:
         brand = list(tmp_brand.parent.stripped_strings)[-1]
     else:
