@@ -28,21 +28,22 @@ def make_page_links(page_links, page_links_queue):
 def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
     while True:
         tmp_links = page_links_queue.get()
-        print("开始解析 " + str(tmp_links) + "  数据")
         if tmp_links == "#END#":  # 遇到结束标志，推出进程
             page_links_queue.put("#END#")
             print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
         else:
-            r = requests.get(tmp_links, headers=header)
-            while r.status_code != 200:
-                time.sleep(10)
-                print("重新解析  " + str(tmp_links) + "   数据")
-                r = requests.get(tmp_links, headers=header, proxies= random.choice(proxy_list))
-            r.encoding = 'utf-8'
-            html = r.text
-            soup = BeautifulSoup(html, "html.parser")
             try:
+                print("开始解析 " + str(tmp_links))
+                r = requests.get(tmp_links, headers=header)
+                while r.status_code != 200:
+                    time.sleep(10)
+                    print("重新解析  " + str(tmp_links))
+                    r = requests.get(tmp_links, headers=header, proxies= random.choice(proxy_list))
+                r.encoding = 'utf-8'
+                html = r.text
+                soup = BeautifulSoup(html, "html.parser")
+
                 if 'selected-cigars.com' in tmp_links:
                     item_url_list = site.selectcigars_get_item_url(tmp_links, soup)
                     for i in item_url_list:
@@ -57,6 +58,10 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
                         item_url_queue.put(i)
                 elif 'cigarmust.com' in tmp_links:
                     item_url_list = site.cigarmust_get_item_url(tmp_links, soup)
+                    for i in item_url_list:
+                        item_url_queue.put(i)
+                elif 'lacasadeltabaco.com' in tmp_links:
+                    item_url_list = site.lacasadeltabaco_get_item_url(tmp_links, soup)
                     for i in item_url_list:
                         item_url_queue.put(i)
                 else:
@@ -80,17 +85,17 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
             break
         else:
             print("开始获取 " + str(tmp_items) + "  数据")
-            r = requests.get(tmp_items, headers=header)
-            times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-            while r.status_code != 200:
-                time.sleep(10)
-                print(r.status_code)
-                print("重新获取  " + str(tmp_items) + "   数据")
-                r = requests.get(tmp_items, headers=header, proxies= random.choice(proxy_list))
-            r.encoding = 'utf-8'
-            html = r.text
-            soup = BeautifulSoup(html, "lxml")
             try:
+                r = requests.get(tmp_items, headers=header)
+                times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                while r.status_code != 200:
+                    time.sleep(10)
+                    print(r.status_code)
+                    print("重新获取  " + str(tmp_items) + "   数据")
+                    r = requests.get(tmp_items, headers=header, proxies= random.choice(proxy_list))
+                r.encoding = 'utf-8'
+                html = r.text
+                soup = BeautifulSoup(html, "lxml")
                 if 'selected-cigars.com' in tmp_items:
                     item_info_list = site.selectcigars_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
@@ -107,6 +112,10 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                     item_info_list = site.cigarmust_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
                         item_info_queue.put(i)
+                elif 'lacasadeltabaco.com' in tmp_items:
+                    item_info_list = site.lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue, times)
+                    for i in item_info_list:
+                        item_info_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
@@ -117,7 +126,7 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
-    db = connect['cigarmust']
+    db = connect['cigarsotck']
     collection = db['stock']
     global writenums
 
@@ -125,27 +134,30 @@ def save_to_mongodb(item_info_queue):
         while item_info_queue.empty():
             time.sleep(0.02)
         cigarinfo = item_info_queue.get()
-        group = cigarinfo["group"]
         if cigarinfo == "#END#":  # 遇到退出标志，退出进程
             print("数据存储完成")
             break
         else:
             try:
-                tmp_data = cigarinfo
-                tmp_del = ['group', 'Brand', 'cigar_name', 'itemurl']
-                tmp_filter = {'group': tmp_data['group'], 'Brand': tmp_data['Brand'],
-                              'cigar_name': tmp_data['cigar_name'], 'itemurl': tmp_data['itemurl']}
-                for i in tmp_del:
-                    del tmp_data[i]
-                collection.update_one(
-                    filter=tmp_filter, update={
-                        "$set": tmp_data}, upsert=True)
-                with writenums.get_lock():
-                    writenums.value += 1
+                if isinstance(cigarinfo, dict):
+                    tmp_data = cigarinfo
+                    tmp_del = ['group', 'Brand', 'cigar_name', 'itemurl']
+                    tmp_filter = {'group': tmp_data['group'], 'Brand': tmp_data['Brand'],
+                                  'cigar_name': tmp_data['cigar_name'], 'itemurl': tmp_data['itemurl']}
+                    for i in tmp_del:
+                        del tmp_data[i]
+                    collection.update_one(
+                        filter=tmp_filter, update={
+                            "$set": tmp_data}, upsert=True)
+                    with writenums.get_lock():
+                        writenums.value += 1
+                else:
+                    print(cigarinfo, "    数据出错无法存储")
             except Exception as err:
-                print(group + "    存储报错")
+                print(cigarinfo + "    存储报错")
                 print(err.args)
                 print(traceback.format_exc())
+                print(cigarinfo)
 
 def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     '''组织抓取过程'''
@@ -166,9 +178,8 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     item_info_queue = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36'
                             ' (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
-    api = 'http://webapi.http.zhimacangku.com/getip?num=10&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
     make_page_links(links, page_links_queue)  # 调用函数构造list
-    proxy_list = make_proxy_list(api)
+    proxy_list = make_proxy_list()
     for index in range(0, get_item_url_nums):  # 获取item list
         get_item_url_pool.apply_async(
             func=get_item_url, args=(
@@ -194,7 +205,8 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     save_to_mongodb_pool.join()
     print("已写入  " + str(writenums.value) + "  条数据")
 
-def make_proxy_list(api):
+def make_proxy_list():
+    api ='http://webapi.http.zhimacangku.com/getip?num=1&type=2&pro=&city=0&yys=100026&port=11&pack=89501&ts=0&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions='
     r = requests.get(api)
     r.encoding = 'utf-8'
     html = r.json()
@@ -218,21 +230,23 @@ def make_proxy_list(api):
 def make_website_links():
     links = []
 
-    # for index in range(1, 14 + 1):
-    #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
-    # for index in range(1, 16 + 1):
-    #     links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
+    for index in range(1, 14 + 1):
+        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
+    for index in range(1, 16 + 1):
+        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
     for index in range(1, 8+1):
         links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
-    # with open("cigarworld.txt", 'r') as f:
-    #     tmp_links = f.readlines()
-    # for i in tmp_links:
-    #     links.append(i.strip())
+    for index in range(1, 16+1):
+        links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
+    with open("cigarworld.txt", 'r') as f:
+        tmp_links = f.readlines()
+    for i in tmp_links:
+        links.append(i.strip())
     return links
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
     links = make_website_links()
-    maxurl = 3  # 解析列表页，获取商品链接的进程
+    maxurl = 5  # 解析列表页，获取商品链接的进程
     maxinfo = 15  # 获取商品信息的进程
     maxsave = 1  # 存储进程
     runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间

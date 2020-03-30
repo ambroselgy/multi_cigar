@@ -48,6 +48,13 @@ def cigarmust_get_item_url(tmp_links, soup):
 
     return item_url_list
 
+def lacasadeltabaco_get_item_url(tmp_links, soup):
+    item_url_list = []
+    item_list = soup.select('div.shop_product_metas > h3')
+    for i in item_list:
+        item_url_list.append(i.find('a')['href'])
+    return item_url_list
+
 def selectcigars_get_item_info(tmp_items, soup, item_info_queue,times):
     item_info_list = []
     cigar_name = soup.find('span', class_='base', attrs={'data-ui-id': 'page-title-wrapper'}).text.strip()
@@ -205,8 +212,13 @@ def alpscigar_get_item_info(tmp_items, soup, item_info_queue,times):
         cigar_price = tmp_detailed.find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
         detailed = tmp_pricelist[0].find('ins').find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
     else:
-        cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
-        detailed = cigar_price
+        tmp_cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount')
+        if tmp_cigar_price:
+            cigar_price = tmp_cigar_price.get_text().replace("€", "").replace("'","").strip()
+            detailed = cigar_price
+        else:
+            cigar_price = '0'
+            detailed = cigar_price
     tmp_stock = tmp_pricelist[0].find('p', attrs={'class': re.compile(r'^stock')})
     if tmp_stock:
         stock = tmp_stock.get_text()
@@ -259,4 +271,31 @@ def cigarmust_get_item_info(tmp_items, soup, item_info_queue,times):
                 'itemurl': tmp_items,
                 'times': times}
             item_info_list.append(cigarinfo)
+    return item_info_list
+
+def lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue,times):
+    item_info_list = []
+    tmp_brand = soup.find('p',attrs={"itemprop":"brand"})
+    if tmp_brand:
+        brand = tmp_brand.get_text()
+    else:
+        brand = 'other'
+    group = soup.find('h1',class_="product_title entry-title").get_text().strip()
+    cigar_name = re.sub(r"\/(\d*)$","",group).strip()
+    tmp_cigar_price = soup.select("div.product_price > p.price > span.woocommerce-Price-amount.amount")
+    cigar_price = tmp_cigar_price[0].get_text().replace("€", "").replace(",",".").strip()
+    stock = 'in stock'
+    detailed = cigar_price
+    details = '0'
+    cigarinfo = {
+        'Brand': brand,
+        'cigar_name': cigar_name,
+        'group': group,
+        'detailed': detailed,
+        'stock': stock,
+        'details': details,
+        'cigar_price': cigar_price,
+        'itemurl': tmp_items,
+        'times': times}
+    item_info_list.append(cigarinfo)
     return item_info_list
