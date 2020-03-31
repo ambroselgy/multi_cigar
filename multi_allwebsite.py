@@ -64,6 +64,10 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
                     item_url_list = site.lacasadeltabaco_get_item_url(tmp_links, soup)
                     for i in item_url_list:
                         item_url_queue.put(i)
+                elif 'amsterdam.com' in tmp_links:
+                    item_url_list = site.amsterdam_get_item_url(tmp_links, soup)
+                    for i in item_url_list:
+                        item_url_queue.put(i)
                 else:
                     print('网址错误')
             except Exception as err:
@@ -114,6 +118,10 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                         item_info_queue.put(i)
                 elif 'lacasadeltabaco.com' in tmp_items:
                     item_info_list = site.lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue, times)
+                    for i in item_info_list:
+                        item_info_queue.put(i)
+                elif 'amsterdam.com' in tmp_items:
+                    item_info_list = site.amsterdam_get_item_info(tmp_items, soup, item_info_queue, times)
                     for i in item_info_list:
                         item_info_queue.put(i)
                 else:
@@ -230,15 +238,19 @@ def make_proxy_list():
 def make_website_links():
     links = []
 
-    for index in range(1, 14 + 1):
-        links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
-    for index in range(1, 16 + 1):
-        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
-    for index in range(1, 8+1):
-        links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
-    for index in range(1, 16+1):
-        links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
-    with open("cigarworld.txt", 'r') as f:
+    # for index in range(1, 14 + 1):
+    #     links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
+    # for index in range(1, 16 + 1):
+    #     links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
+    # for index in range(1, 8+1):
+    #     links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
+    # for index in range(1, 16+1):
+    #     links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
+    # with open("cigarworld.txt", 'r') as f:
+    #     tmp_links = f.readlines()
+    # for i in tmp_links:
+    #     links.append(i.strip())
+    with open("amsterdam.txt", 'r') as f:
         tmp_links = f.readlines()
     for i in tmp_links:
         links.append(i.strip())

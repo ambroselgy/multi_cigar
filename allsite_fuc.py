@@ -55,6 +55,15 @@ def lacasadeltabaco_get_item_url(tmp_links, soup):
         item_url_list.append(i.find('a')['href'])
     return item_url_list
 
+def amsterdam_get_item_url(tmp_links, soup):
+    item_url_list = []
+    tmp_item_url = soup.select('div.product-thumb h4 a')
+    if tmp_item_url:
+        for i in tmp_item_url:
+            item_url = i['href']
+            item_url_list.append(item_url)
+    return item_url_list
+
 def selectcigars_get_item_info(tmp_items, soup, item_info_queue,times):
     item_info_list = []
     cigar_name = soup.find('span', class_='base', attrs={'data-ui-id': 'page-title-wrapper'}).text.strip()
@@ -299,3 +308,48 @@ def lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue,times):
         'times': times}
     item_info_list.append(cigarinfo)
     return item_info_list
+
+def amsterdam_get_item_info(tmp_items, soup, item_info_queue,times):
+    item_info_list = []
+    brand_find = soup.find('', text=re.compile(r'Brand: ', re.I))
+    if brand_find:
+        brand = brand_find.next_sibling.get_text()
+    else:
+        brand = 'other'
+    stock_find = soup.find('li', text=re.compile(r'Availa.*\:'))
+    if stock_find:
+        stock = re.sub(r'.*\:', '', stock_find.get_text()).strip()
+    else:
+        stock = 'sold out'
+    price_find = soup.find('h2', class_='productprice')
+    if price_find:
+        single_price = price_find.get_text().replace("€", "").replace(",", "").strip()
+    details = '0'
+    cigar_name_find = soup.find('h1')
+    if cigar_name_find:
+        cigar_name = cigar_name_find.get_text()
+    else:
+        cigar_name = 'other'
+    group_find = soup.find_all('option', attrs={'value':re.compile(r'\d')})
+    for i in group_find:
+        tmp_group = i.get_text().strip()
+        if tmp_group == 'Singles':
+            cigar_price = single_price
+            group = cigar_name + " " + tmp_group
+        else:
+            cigar_price = str(round(int(re.findall(r"\d+\.?\d*", tmp_group)[0]) * float(single_price),2))
+            group = cigar_name + " " + tmp_group
+        detailed = cigar_price
+        cigarinfo = {
+            'Brand': brand,
+            'cigar_name': cigar_name,
+            'group': group,
+            'detailed': detailed,
+            'stock': stock,
+            'details': details,
+            'cigar_price': cigar_price,
+            'itemurl': tmp_items,
+            'times': times}
+        item_info_list.append(cigarinfo)
+    return item_info_list
+
