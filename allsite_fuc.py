@@ -284,16 +284,11 @@ def cigarmust_get_item_info(tmp_items, soup, item_info_queue,times):
 
 def lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue,times):
     item_info_list = []
-    tmp_brand = soup.find('p',attrs={"itemprop":"brand"})
-    if tmp_brand:
-        brand = tmp_brand.get_text()
-    else:
-        brand = 'other'
+    brand = soup.find('meta', attrs={'property':'og:brand'})['content']
     group = soup.find('h1',class_="product_title entry-title").get_text().strip()
     cigar_name = re.sub(r"\/(\d*)$","",group).strip()
-    tmp_cigar_price = soup.select("div.product_price > p.price > span.woocommerce-Price-amount.amount")
-    cigar_price = tmp_cigar_price[0].get_text().replace("€", "").replace(",",".").strip()
-    stock = 'in stock'
+    cigar_price = soup.find('meta', attrs={'property':'product:price:amount'})['content']
+    stock = soup.find('meta', attrs={'property':'product:availability'})['content']
     detailed = cigar_price
     details = '0'
     cigarinfo = {

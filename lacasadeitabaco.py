@@ -8,7 +8,7 @@ import json
 import traceback
 
 def run():
-    tmp_items=("https://www.lacasadeltabaco.com/zh-hans/product/flor-de-cano-preferidos-loc-mar02-vintage-03-02-5/")
+    tmp_items=("https://www.lacasadeltabaco.com/zh-hans/product/romeo-y-julieta-mille-fleur-25/")
     # for i in links:
     #     tmp_items = i
     #     print("开始解析  "+str(i))
@@ -23,25 +23,13 @@ def run():
     r.encoding = 'utf-8'
     html = r.text
     soup = BeautifulSoup(html, "lxml")
-    try:
-        item_list = soup.select('div.shop_product_metas > h3')
-        for i in item_list:
-            print(i.find('a')['href'])
-    except Exception as err:
-        print(err.args)
-        print(traceback.format_exc())
-    tmp_brand = soup.find('p',attrs={"itemprop":"brand"})
-    if tmp_brand:
-        brand = tmp_brand.get_text()
-    else:
-        brand = 'other'
-    group = soup.find('h1',class_="product_title entry-title").get_text()
-    cigar_name = re.sub(r"\/(\d*)$","",group).strip()
-    tmp_cigar_price = soup.select("div.product_price > p.price > span.woocommerce-Price-amount.amount")
-    cigar_price = tmp_cigar_price[0].get_text().replace("€", "").replace(",",".").strip()
-    stock = 'in stock'
-    detailed = cigar_price
+    brand = soup.find('meta', attrs={'property':'og:brand'})['content']
+    cigar_price = soup.find('meta', attrs={'property':'product:price:amount'})['content']
+    stock = soup.find('meta', attrs={'property':'product:availability'})['content']
+    group = soup.find('h1', class_="product_title entry-title").get_text().strip()
     details = '0'
+    detailed = cigar_price
+    cigar_name = re.sub(r"\/(\d*)$", "", group).strip()
     cigarinfo = {
         'Brand': brand,
         'cigar_name': cigar_name,

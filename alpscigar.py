@@ -213,46 +213,51 @@ def run():
 
     tmp_items = 'https://alpscigar.com/shop/humidors/limited-edition/cubatabaco-1492-humidor-1992/?wmc-currency=EUR'
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)'}
-    r = requests.get(tmp_items, headers=header)
-    times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    while r.status_code != 200:
-        time.sleep(10)
-        print(r.status_code)
-        print("重新获取  " + str(tmp_items) + "   数据")
-        r = requests.get(tmp_items, headers=header)
-    r.encoding = 'utf-8'
+    tmp_post = 'https://alpscigar.com/mod_pagespeed_beacon?url=https%3A%2F%2Falpscigar.com%2Fproduct-category%2Fcuban-cigars%2Fpage%2F7%2F'
+    r = requests.post(tmp_post,headers=header)
+    r.encoding='utf-8'
     html = r.text
-    soup = BeautifulSoup(html, "lxml")
-    tmp_brand = soup.find('tr',class_='woocommerce-product-attributes-item woocommerce-product-attributes-item--attribute_pa_brand')
-    if tmp_brand:
-        brand = tmp_brand.find('td', class_='woocommerce-product-attributes-item__value').get_text().strip()
-    else:
-        brand = 'other'
-    group = soup.find('h1',class_='product-title product_title entry-title').get_text()
-    cigar_name = re.sub(r'\((\d+)\)$', '', group)
-    tmp_pricelist = soup.select('div.product-info.summary.entry-summary.col.col-fit.product-summary.text-left.form-flat')
-    tmp_detailed = tmp_pricelist[0].find('del')
-    if tmp_detailed:
-        cigar_price = tmp_detailed.find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
-        detailed = tmp_pricelist[0].find('ins').find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
-    else:
-        tmp_cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount')
-        if tmp_cigar_price:
-            cigar_price = tmp_cigar_price.get_text().replace("€", "").replace("'","").strip()
-            detailed = cigar_price
-        else:
-            cigar_price = '0'
-            detailed = cigar_price
-    tmp_stock = tmp_pricelist[0].find('p', attrs={'class': re.compile(r'^stock')})
-    if tmp_stock:
-        stock = tmp_stock.get_text()
-    else:
-        stock = 'in stock'
-    print(brand)
-    print(cigar_name)
-    print(group)
-    print(cigar_price)
-    print(detailed)
-    print(stock)
+    print(html)
+    # r = requests.get(tmp_items, headers=header)
+    # times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    # while r.status_code != 200:
+    #     time.sleep(10)
+    #     print(r.status_code)
+    #     print("重新获取  " + str(tmp_items) + "   数据")
+    #     r = requests.get(tmp_items, headers=header)
+    # r.encoding = 'utf-8'
+    # html = r.text
+    # soup = BeautifulSoup(html, "lxml")
+    # tmp_brand = soup.find('tr',class_='woocommerce-product-attributes-item woocommerce-product-attributes-item--attribute_pa_brand')
+    # if tmp_brand:
+    #     brand = tmp_brand.find('td', class_='woocommerce-product-attributes-item__value').get_text().strip()
+    # else:
+    #     brand = 'other'
+    # group = soup.find('h1',class_='product-title product_title entry-title').get_text()
+    # cigar_name = re.sub(r'\((\d+)\)$', '', group)
+    # tmp_pricelist = soup.select('div.product-info.summary.entry-summary.col.col-fit.product-summary.text-left.form-flat')
+    # tmp_detailed = tmp_pricelist[0].find('del')
+    # if tmp_detailed:
+    #     cigar_price = tmp_detailed.find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+    #     detailed = tmp_pricelist[0].find('ins').find('span',class_='woocommerce-Price-amount amount').get_text().replace("€", "").replace("'","").strip()
+    # else:
+    #     tmp_cigar_price = tmp_pricelist[0].find('span',class_='woocommerce-Price-amount amount')
+    #     if tmp_cigar_price:
+    #         cigar_price = tmp_cigar_price.get_text().replace("€", "").replace("'","").strip()
+    #         detailed = cigar_price
+    #     else:
+    #         cigar_price = '0'
+    #         detailed = cigar_price
+    # tmp_stock = tmp_pricelist[0].find('p', attrs={'class': re.compile(r'^stock')})
+    # if tmp_stock:
+    #     stock = tmp_stock.get_text()
+    # else:
+    #     stock = 'in stock'
+    # print(brand)
+    # print(cigar_name)
+    # print(group)
+    # print(cigar_price)
+    # print(detailed)
+    # print(stock)
 
 run()
