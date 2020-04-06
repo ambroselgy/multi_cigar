@@ -39,7 +39,8 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
                 while r.status_code != 200:
                     time.sleep(10)
                     print("重新解析  " + str(tmp_links))
-                    r = requests.get(tmp_links, headers=header, proxies=random.choice(proxy_list))
+                    #r = requests.get(tmp_links, headers=header, proxies=random.choice(proxy_list))
+                    r = requests.get(tmp_links, headers=header)
                 r.encoding = 'utf-8'
                 html = r.text
                 soup = BeautifulSoup(html, "html.parser")
@@ -96,7 +97,8 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                     time.sleep(10)
                     print(r.status_code)
                     print("重新获取  " + str(tmp_items) + "   数据")
-                    r = requests.get(tmp_items, headers=header, proxies= random.choice(proxy_list))
+                    #r = requests.get(tmp_items, headers=header, proxies= random.choice(proxy_list))
+                    r = requests.get(tmp_items, headers=header)
                 r.encoding = 'utf-8'
                 html = r.text
                 soup = BeautifulSoup(html, "lxml")
@@ -130,11 +132,15 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
                 print(str(tmp_items) + "    商品获取报错")
                 print(err.args)
                 print(traceback.format_exc())
+                runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
+                filename = "./data/err_" + str(runtime) + ".txt"
+                data = open(filename, 'w', encoding="utf-8")
+                print(traceback.format_exc(), file=data)
 
 
 def save_to_mongodb(item_info_queue):
     connect = MongoClient(host='localhost', port=27017)
-    db = connect['cigarsotck']
+    db = connect['cigarstock']
     collection = db['stock']
     global writenums
 

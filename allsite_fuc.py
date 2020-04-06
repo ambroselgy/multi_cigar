@@ -168,11 +168,11 @@ def cigarworld_get_item_info(tmp_items, soup, item_info_queue,times):
             details = 0
 
         cigarinfo = {
-            'Brand': brand,
-            'cigar_name': cigar_name,
-            'group': group,
+            'Brand': brand.lower(),
+            'cigar_name': cigar_name.lower(),
+            'group': group.lower(),
             'detailed': detailed,
-            'stock': stock,
+            'stock': stock.lower(),
             'details': details,
             'cigar_price': cigar_price,
             'itemurl': tmp_items,
@@ -210,11 +210,11 @@ def alpscigar_get_item_info(tmp_items, soup, item_info_queue,times):
         stock = 'in stock'
     details = '0'
     cigarinfo = {
-        'Brand': brand,
-        'cigar_name': cigar_name,
-        'group': group,
+        'Brand': brand.lower(),
+        'cigar_name': cigar_name.lower(),
+        'group': group.lower(),
         'detailed': detailed,
-        'stock': stock,
+        'stock': stock.lower(),
         'details': details,
         'cigar_price': cigar_price,
         'itemurl': tmp_items,
@@ -245,11 +245,11 @@ def cigarmust_get_item_info(tmp_items, soup, item_info_queue,times):
         for k, v in info['attributes_values'].items():
             group = cigar_name + " " + v
             cigarinfo = {
-                'Brand': brand,
-                'cigar_name': cigar_name,
-                'group': group,
+                'Brand': brand.lower(),
+                'cigar_name': cigar_name.lower(),
+                'group': group.lower(),
                 'detailed': detailed,
-                'stock': stock,
+                'stock': stock.lower(),
                 'details': details,
                 'cigar_price': cigar_price,
                 'itemurl': tmp_items,
@@ -267,11 +267,11 @@ def lacasadeltabaco_get_item_info(tmp_items, soup, item_info_queue,times):
     detailed = cigar_price
     details = '0'
     cigarinfo = {
-        'Brand': brand,
-        'cigar_name': cigar_name,
-        'group': group,
+        'Brand': brand.lower(),
+        'cigar_name': cigar_name.lower(),
+        'group': group.lower(),
         'detailed': detailed,
-        'stock': stock,
+        'stock': stock.lower(),
         'details': details,
         'cigar_price': cigar_price,
         'itemurl': tmp_items,
@@ -311,11 +311,11 @@ def amsterdam_get_item_info(tmp_items, soup, item_info_queue,times):
             group = cigar_name + " " + tmp_group
         detailed = cigar_price
         cigarinfo = {
-            'Brand': brand,
-            'cigar_name': cigar_name,
-            'group': group,
+            'Brand': brand.lower(),
+            'cigar_name': cigar_name.lower(),
+            'group': group.lower(),
             'detailed': detailed,
-            'stock': stock,
+            'stock': stock.lower(),
             'details': details,
             'cigar_price': cigar_price,
             'itemurl': tmp_items,
