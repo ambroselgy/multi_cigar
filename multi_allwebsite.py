@@ -22,17 +22,16 @@ def make_page_links(page_links, page_links_queue):
     for index in page_links:
         print(index + "   放入链接池")
         page_links_queue.put(index)
-    page_links_queue.put("#END#")
 
 
 def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
     while True:
-        tmp_links = page_links_queue.get()
-        if tmp_links == "#END#":  # 遇到结束标志，推出进程
-            page_links_queue.put("#END#")
+
+        if page_links_queue.empty():  # 队列为空，推出进程
             print("get_item_url Quit {}".format(page_links_queue.qsize()))
             break
         else:
+            tmp_links = page_links_queue.get()
             try:
                 print("开始解析 " + str(tmp_links))
                 r = requests.get(tmp_links, headers=header)
@@ -250,8 +249,8 @@ def make_website_links():
         links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
     for index in range(1, 8+1):
         links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
-    for index in range(1, 16+1):
-        links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
+    # for index in range(1, 16+1):
+    #     links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
     with open("cigarworld.txt", 'r') as f:
         tmp_links = f.readlines()
     for i in tmp_links:

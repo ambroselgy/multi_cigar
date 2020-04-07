@@ -1,15 +1,18 @@
 import time
 from pymongo import MongoClient
 import csv
+import os
 
 def run():
     connect = MongoClient(host='localhost', port=27017)
-    db = connect['cigarsotck']
+    db = connect['cigarstock']
     collection = db['stock']
     find_brand = ''
     find_cigar_name = ''
     find_stock = ''
-    filename = 'cigarstock.csv'
+    if not os.path.isdir('./data/'):
+        os.mkdir('./data/')
+    filename = './data/cigarstock.csv'
     find_list = collection.find({"$and": [{"Brand": {"$regex":find_brand,'$options':'i'}}, {"cigar_name": {"$regex":find_cigar_name,'$options':'i'}}]})
     for i in find_list:
         del i['_id']
