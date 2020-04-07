@@ -149,6 +149,7 @@ def save_to_mongodb(item_info_queue):
         cigarinfo = item_info_queue.get()
         if cigarinfo == "#END#":  # 遇到退出标志，退出进程
             print("数据存储完成")
+            print("队列剩余" + str(item_info_queue.qsize()))
             break
         else:
             try:
