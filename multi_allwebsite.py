@@ -8,6 +8,7 @@ import csv
 import allsite_fuc as site
 import traceback
 import random
+requests.packages.urllib3.disable_warnings()
 
 
 def sleeptime(hour, min, sec):
@@ -39,7 +40,7 @@ def get_item_url(page_links_queue, item_url_queue, header, proxy_list,):
                     time.sleep(10)
                     print("重新解析  " + str(tmp_links))
                     #r = requests.get(tmp_links, headers=header, proxies=random.choice(proxy_list))
-                    r = requests.get(tmp_links, headers=header)
+                    r = requests.get(tmp_links, headers=header, verify=False)
                 r.encoding = 'utf-8'
                 html = r.text
                 soup = BeautifulSoup(html, "html.parser")
@@ -90,7 +91,7 @@ def get_item_info(item_url_queue, item_info_queue, header, proxy_list):
         else:
             print("开始获取 " + str(tmp_items) + "  数据")
             try:
-                r = requests.get(tmp_items, headers=header)
+                r = requests.get(tmp_items, headers=header, verify=False)
                 times = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                 while r.status_code != 200:
                     time.sleep(10)
@@ -191,7 +192,8 @@ def start_work_mongodb(links, maxurl, maxinfo, maxsave):
     item_url_queue = Manager().Queue()
     item_info_queue = Manager().Queue()
     header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36'
-                            ' (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
+                            ' (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
+              'Connection':'close'}
     make_page_links(links, page_links_queue)  # 调用函数构造list
     proxy_list = make_proxy_list()
     for index in range(0, get_item_url_nums):  # 获取item list
@@ -265,7 +267,7 @@ second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
     links = make_website_links()
     maxurl = 5  # 解析列表页，获取商品链接的进程
-    maxinfo = 10  # 获取商品信息的进程
+    maxinfo = 15  # 获取商品信息的进程
     maxsave = 1  # 存储进程
     runtime = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")  # 生成时间
     st = time.time()
