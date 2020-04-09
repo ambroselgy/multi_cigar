@@ -248,20 +248,20 @@ def make_website_links():
 
     for index in range(1, 14 + 1):
         links.append("https://selected-cigars.com/en/cigars?p=" + str(index))  # 构造select-cigars links
-    for index in range(1, 16 + 1):
-        links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
-    for index in range(1, 8+1):
-        links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
-    # for index in range(1, 16+1):
-    #     links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
-    with open("cigarworld.txt", 'r') as f:
-        tmp_links = f.readlines()
-    for i in tmp_links:
-        links.append(i.strip())
-    with open("amsterdam.txt", 'r') as f:
-        tmp_links = f.readlines()
-    for i in tmp_links:
-        links.append(i.strip())
+    # for index in range(1, 16 + 1):
+    #     links.append("https://alpscigar.com/product-category/cuban-cigars/page/"+str(index)+"/?wmc-currency=EUR") #构造aplscigar links
+    # for index in range(1, 8+1):
+    #     links.append("https://cigarmust.com/en/170--cuban-habanos?id_category=170&n=25&p=" + str(index))
+    # # for index in range(1, 16+1):
+    # #     links.append("https://www.lacasadeltabaco.com/zh-hans/product-category/%e9%9b%aa%e8%8c%84/%e5%8f%a4%e5%b7%b4/page/"+str(index)+"/")
+    # with open("cigarworld.txt", 'r') as f:
+    #     tmp_links = f.readlines()
+    # for i in tmp_links:
+    #     links.append(i.strip())
+    # with open("amsterdam.txt", 'r') as f:
+    #     tmp_links = f.readlines()
+    # for i in tmp_links:
+    #     links.append(i.strip())
     return links
 second = sleeptime(1, 0, 0)  # 间隔运行时间 时：分：秒
 if __name__ == '__main__':
